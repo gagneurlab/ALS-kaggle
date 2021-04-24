@@ -1,0 +1,28 @@
+workdir: ".."
+
+
+configfile: "scripts/config.yaml"
+
+
+rule all:
+    input:
+        config['outrider']['counts']
+
+
+rule gene_counts:
+    input:
+        count_dir = config['gene_count_dir'],
+        samples = config['metadata']['participants']
+    output:
+        counts = config['outrider']['counts']
+    script:
+        "merge_gene_counts.py"
+
+
+rule outrider:
+    input:
+        counts = config['outrider']['counts']
+    output:
+        counts = config['outrider']['results']
+    script:
+        "outrider.R"
