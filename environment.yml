@@ -1,0 +1,11 @@
+name: als
+channels:
+  - bioconda
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.7.10
+  - pip:
+      - snakemake==6.2.1
+      - pandas==1.2.4
+prefix: /opt/modules/i12g/anaconda/envs/als

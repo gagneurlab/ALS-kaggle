@@ -7,4 +7,4 @@ transcriptomics:
 
 outrider:
   counts: data/processed/outrider/gene_counts.tsv
-  results: data/processed/outrider/
+  results: data/processed/outrider/results.tsv

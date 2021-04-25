@@ -6,12 +6,12 @@ configfile: "scripts/config.yaml"
 
 rule all:
     input:
-        config['outrider']['counts']
+        config['outrider']['results']
 
 
 rule gene_counts:
     input:
-        count_dir = config['gene_count_dir'],
+        count_dir = config['transcriptomics']['gene_count_dir'],
         samples = config['metadata']['participants']
     output:
         counts = config['outrider']['counts']
