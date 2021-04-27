@@ -34,7 +34,8 @@ ods <- filterExpression(
     filterGenes = FALSE
 )
 
+png(snakemake@output$filtered_plot)
 plotFPKM(ods)
-ggsave(snakemake@output$filtered_plot)
+dev.off()
 
 saveRDS(ods, snakemake@output$ods)

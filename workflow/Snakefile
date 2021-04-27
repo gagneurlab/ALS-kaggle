@@ -1,7 +1,4 @@
-workdir: ".."
-
-
-configfile: "scripts/config.yaml"
+configfile: "configs/config.yaml"
 
 
 rule all:
@@ -16,7 +13,7 @@ rule merge_gene_counts:
     output:
         counts = config['output'] + '/counts/gene_counts.tsv'
     script:
-        "merge_gene_counts.py"
+        "scripts/merge_gene_counts.py"
         
 
 rule filter_counts:
@@ -29,7 +26,7 @@ rule filter_counts:
         fpkm_cutoff = config['outrider']['fpkm_cutoff'],
         ensembl_release = config['genome']['ensembl_release']
     script:
-        "filter_counts.R"
+        "scripts/filter_counts.R"
 
 
 rule outrider:
@@ -41,4 +38,4 @@ rule outrider:
     params:
         padj_cutoff = config['outrider']['padj_cutoff']
     script:
-        "outrider.R"
+        "scripts/outrider.R"
