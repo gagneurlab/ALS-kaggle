@@ -9,20 +9,36 @@ rule all:
         config['outrider']['results']
 
 
-rule gene_counts:
+rule merge_gene_counts:
     input:
         count_dir = config['transcriptomics']['gene_count_dir'],
         samples = config['metadata']['participants']
     output:
-        counts = config['outrider']['counts']
+        counts = config['output'] + '/counts/gene_counts.tsv'
     script:
         "merge_gene_counts.py"
+        
+
+rule filter_counts:
+    input:
+        counts = rules.merge_gene_counts.output.counts
+    output:
+        ods = config['output'] + '/counts/ods_filtered.RDS',
+        filter_plot = config['output'] + '/counts/filtered.png'
+    params:
+        fpkm_cutoff = config['outrider']['fpkm_cutoff'],
+        ensembl_release = config['genome']['ensembl_release']
+    script:
+        "filter_counts.R"
 
 
 rule outrider:
     input:
-        counts = config['outrider']['counts']
+        ods = rules.filter_counts.output.ods
     output:
-        counts = config['outrider']['results']
+        ods = config['output'] + '/outrider/ods.RDS',
+        results = config['outrider']['results']
+    params:
+        padj_cutoff = config['outrider']['padj_cutoff']
     script:
         "outrider.R"

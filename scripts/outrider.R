@@ -1,11 +1,11 @@
 library(OUTRIDER)
 
-ctsTable <- read.table(snakemake@input[[1]], check.names=FALSE)
+padj_cutoff <- snakemake@params$padj_cutoff
 
-ods <- OutriderDataSet(countData=ctsTable)
-ods <- filterExpression(ods, minCounts=TRUE, filterGenes=TRUE)
+ods <- readRDS(snakemake@input$ods)
 ods <- OUTRIDER(ods)
-res <- results(ods)
+res <- results(ods, padjCutoff = padj_cutoff)
 
-fwrite(res, snakemake@output[[1]])
+saveRDS(ods, snakemake@output$ods)
+fwrite(res, snakemake@output$results)
 
