@@ -21,7 +21,7 @@ rule filter_counts:
         counts = rules.merge_gene_counts.output.counts
     output:
         ods = config['output'] + '/counts/ods_filtered.RDS',
-        filter_plot = config['output'] + '/counts/filtered.png'
+        filtered_plot = config['output'] + '/counts/filtered.png'
     params:
         fpkm_cutoff = config['outrider']['fpkm_cutoff'],
         ensembl_release = config['genome']['ensembl_release']

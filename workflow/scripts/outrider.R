@@ -1,4 +1,6 @@
-library(OUTRIDER)
+suppressPackageStartupMessages({
+    library(OUTRIDER)
+})
 
 padj_cutoff <- snakemake@params$padj_cutoff
 
