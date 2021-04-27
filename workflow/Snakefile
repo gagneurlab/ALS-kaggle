@@ -37,5 +37,6 @@ rule outrider:
         results = config['outrider']['results']
     params:
         padj_cutoff = config['outrider']['padj_cutoff']
+    threads: 20
     script:
         "scripts/outrider.R"
