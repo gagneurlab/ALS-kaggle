@@ -5,7 +5,11 @@ channels:
   - conda-forge
 dependencies:
   - python=3.7.10
-  - pip:
-      - snakemake==6.2.1
-      - pandas==1.2.4
-prefix: /opt/modules/i12g/anaconda/envs/als
+  - r-base>=4.0.0
+  - r-data.table
+  - r-ggplot2
+  - bioconductor-outrider >=1.6.1
+  - r-rmariadb
+  - bioconductor-genomicfeatures
+  - snakemake==6.2.1
+  - pandas==1.2.4
