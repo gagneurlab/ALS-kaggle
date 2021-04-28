@@ -1,4 +1,5 @@
 vcf: /s/raw/als/kaggle/end-als/genomics-data/AnswerALS_subset_annovar.hg38_anno_and_geno.no_intergenic.vcf
+gtf: data/common/Homo_sapiens.GRCh38.84.gtf
 
 metadata:
   dir: /s/raw/als/kaggle/end-als/clinical-data/filtered-metadata/metadata/
@@ -17,3 +18,10 @@ genome:
   ensembl_release: 103
 
 output: data/processed
+genes_gtf: data/processed/outrider/outlier_gene_gtf.csv
+
+literature:
+  nature_review: data/processed/nature_review_als_genes.csv
+  wgs: data/processed/wgs_als_genes.csv
+
+vep_variant: /s/project/kaggle-als/vep_annotations/ensembl_bychr.parquet/chrom={chrom}/

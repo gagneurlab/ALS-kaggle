@@ -3,7 +3,8 @@ configfile: "configs/config.yaml"
 
 rule all:
     input:
-        config['outrider']['results']
+        config['outrider']['results'],
+        config['genes_gtf']
 
 
 rule merge_gene_counts:
@@ -14,7 +15,7 @@ rule merge_gene_counts:
         counts = config['output'] + '/counts/gene_counts.tsv'
     script:
         "scripts/merge_gene_counts.py"
-        
+
 
 rule filter_counts:
     input:
@@ -40,3 +41,26 @@ rule outrider:
     threads: 20
     script:
         "scripts/outrider.R"
+
+
+rule outliers_genes:
+    input:
+        gtf = config['gtf'],
+        results = config['outrider']['results']
+    output:
+        genes = config['genes_gtf']
+    script:
+        "scripts/genes_gtf.py"
+
+
+rule compare_literature:
+    input:
+        nature_review = config['literature']['nature_review'],
+        wgs = config['literature']['wgs'],
+        genes = config['genes_gtf'],
+        results = config['outrider']['results']
+    output:
+        fig_nature_review = 'reports/figures/literature_nature_review.png',
+        fig_wgs = 'reports_figures/literature_wgs.png'
+    notebook:
+        "notebooks/compare_literature.ipynb"
