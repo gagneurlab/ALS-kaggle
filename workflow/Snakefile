@@ -2,9 +2,7 @@ configfile: "configs/config.yaml"
 
 
 rule all:
-    input:
-        config['outrider']['results'],
-        config['genes_gtf']
+    input: config['output'] + '/all.done'
 
 
 rule merge_gene_counts:
@@ -44,6 +42,21 @@ rule outrider:
         "scripts/outrider.R"
 
 
+rule outrider_plots:
+    input:
+        ods_raw = rules.filter_counts.output.ods,
+        ods = rules.outrider.output.ods
+    output:
+        disp_est = config['output'] + '/outrider/disp_est.png',
+        per_sample = config['output'] + '/outrider/aberrant_per_sample.png',
+        expr_genes = config['output'] + '/outrider/expr_genes.png',
+        pvalues = config['output'] + '/outrider/pvalues.png',
+        heatmap_raw = config['output'] + '/outrider/heatmap_raw.png',
+        heatmap_fit = config['output'] + '/outrider/heatmap_fit.png'
+    script:
+        "scripts/outrider_plots.R"
+
+
 rule outliers_genes:
     input:
         gtf = config['gtf'],
@@ -65,3 +78,13 @@ rule compare_literature:
         fig_wgs = 'reports_figures/literature_wgs.png'
     notebook:
         "notebooks/compare_literature.ipynb"
+
+
+rule collect_output:
+    input:
+        rules.outrider_plots.output,
+        rules.outliers_genes.output,
+        rules.compare_literature.output,
+        config['outrider']['results']
+    output:
+        touch(config['output'] + '/all.done')
