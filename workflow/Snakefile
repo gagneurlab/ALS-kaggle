@@ -19,6 +19,7 @@ rule merge_gene_counts:
 
 rule filter_counts:
     input:
+        gtf = config['gtf'],
         counts = rules.merge_gene_counts.output.counts
     output:
         ods = config['output'] + '/counts/ods_filtered.RDS',

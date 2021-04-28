@@ -5,7 +5,7 @@ suppressPackageStartupMessages({
 })
 
 fpkm_cutoff <- snakemake@params$fpkm_cutoff
-ensembl_release <- snakemake@params$ensembl_release
+#ensembl_release <- snakemake@params$ensembl_release
 
 ctsTable <- read.table(
     snakemake@input$counts,
@@ -24,9 +24,9 @@ message(paste(
 
 # Create and filter Outrider dataset
 ods <- OutriderDataSet(countData=ctsTable)
-txdb <- makeTxDbFromEnsembl(organism='Homo sapiens', release = ensembl_release)
+#txdb <- makeTxDbFromEnsembl(organism='Homo sapiens', release = ensembl_release)
 
-ods <- computeGeneLength(ods, gtfFile = txdb)
+ods <- computeGeneLength(ods, gtfFile = snakemake@input$gtf)
 ods <- filterExpression(
     ods, 
     fpkmCutoff = fpkm_cutoff,
