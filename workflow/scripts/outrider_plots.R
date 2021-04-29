@@ -5,6 +5,14 @@ suppressPackageStartupMessages({
 
 ods <- readRDS(snakemake@input$ods)
 
+png(snakemake@output$dim_search)
+plotEncDimSearch(ods)
+dev.off()
+
+png(snakemake@output$power)
+plotPowerAnalysis(ods)
+dev.off()
+
 png(snakemake@output$heatmap_raw)
 plotCountCorHeatmap(ods, normalized = FALSE)
 dev.off()
@@ -24,6 +32,6 @@ dev.off()
 plotExpressedGenes(ods)
 ggsave(snakemake@output$expr_genes)
 
-res <- results(ods, padjCutoff = 1)
+res <- results(ods, all = TRUE)
 ggplot(res, aes(pValue)) + geom_histogram(bins = 100)
 ggsave(snakemake@output$pvalues)

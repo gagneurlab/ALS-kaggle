@@ -45,7 +45,7 @@ rule outrider:
         results = config['outrider']['results']
     params:
         padj_cutoff = config['outrider']['padj_cutoff']
-    threads: 100
+    threads: 60
     script:
         "scripts/outrider.R"
 
@@ -55,6 +55,8 @@ rule outrider_plots:
         ods_raw = rules.filter_counts.output.ods,
         ods = rules.outrider.output.ods
     output:
+        dim_search = config['output'] + '/outrider/dim_search.png',
+        power = config['output'] + '/outrider/dim_search.png',
         disp_est = config['output'] + '/outrider/disp_est.png',
         per_sample = config['output'] + '/outrider/aberrant_per_sample.png',
         expr_genes = config['output'] + '/outrider/expr_genes.png',
