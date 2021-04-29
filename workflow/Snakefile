@@ -23,6 +23,16 @@ rule merge_gene_counts:
         "scripts/merge_gene_counts.py"
 
 
+rule umap:
+    input:
+        counts = rules.merge_gene_counts.output.counts
+    output:
+        plot = config['output'] + '/umap/plot.png'
+    threads: 60
+    script:
+        "scripts/umap.py"
+
+
 rule filter_counts:
     input:
         gtf = config['gtf'],
