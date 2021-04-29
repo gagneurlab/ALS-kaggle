@@ -21,7 +21,7 @@ rule mmsplice:
         mem_mb = 32000,
         threads = 4
     output:
-        result = config['mmsplice']['exon_chrom'],
+        result = config['mmsplice']['results'],
     script:
         "scripts/mmsplice.py"
         

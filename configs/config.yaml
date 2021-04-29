@@ -11,7 +11,7 @@ transcriptomics:
   gene_count_dir: /s/raw/als/kaggle/end-als/transcriptomics-data/L3_counts/
 
 mmsplice:
-  exon_chrom: data/processed/mmsplice_exon/mmsplice_exon_{chrom}.csv
+  results: data/processed/mmsplice_exon/results.csv
   
 outrider:
   fpkm_cutoff: 1.5
