@@ -52,7 +52,7 @@ findEncodingDim_opt <- function (
     return(ods)
 }
 
-q_params <- round(seq(ncol(ods)/6, 100, length.out=10))
+q_params <- round(seq(ncol(ods)/10, 100, length.out=10))
 # outer_threads <- min(length(q_params), total_threads)
 # inner_threads <- max(1, floor(total_threads / outer_threads))
 
