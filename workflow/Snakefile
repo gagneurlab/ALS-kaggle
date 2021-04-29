@@ -1,8 +1,19 @@
+workdir: ".."
+
 configfile: "configs/config.yaml"
 
 
+chroms = [
+    'chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7',
+    'chr8', 'chr9', 'chr10', 'chr11', 'chr12', 'chr13', 'chr14',
+    'chr15', 'chr16', 'chr17', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22', 'chrX'
+]
+
+
 rule all:
-    input: config['output'] + '/all.done'
+    input:
+        config['variants']['prioritized']
+        # config['output'] + '/all.done'
 
 
 rule merge_gene_counts:
@@ -67,6 +78,14 @@ rule outliers_genes:
         "scripts/genes_gtf.py"
 
 
+rule literature:
+    output:
+        nature_review = config['literature']['nature_review'],
+        wgs = config['literature']['wgs']
+    notebook:
+        "notebooks/literature.ipynb"
+
+
 rule compare_literature:
     input:
         nature_review = config['literature']['nature_review'],
@@ -74,10 +93,38 @@ rule compare_literature:
         genes = config['genes_gtf'],
         results = config['outrider']['results']
     output:
-        fig_nature_review = 'reports/figures/literature_nature_review.png',
-        fig_wgs = 'reports_figures/literature_wgs.png'
+        nature_review = config['output'] + \
+            '/literature_overlap_nature_review.txt',
+        wgs = config['output'] + '/literature_overlap_wgs.txt'
     notebook:
         "notebooks/compare_literature.ipynb"
+
+
+rule prioritize_vep_variants:
+    input:
+        vcf = config['vcf'],
+        vep = config['variants']['vep'],
+        results = config['outrider']['results'],
+        genes = config['genes_gtf'],
+        released_files = config['metadata']['released_files']
+    output:
+        prioritized = config['variants']['prioritized_chrom']
+    notebook:
+        "notebooks/prioritized_variants.ipynb"
+
+
+rule merge_variants:
+    input:
+        prioritized = expand(
+            config['variants']['prioritized_chrom'], chrom=chroms)
+    output:
+        prioritized = config['variants']['prioritized']
+    run:
+        import pandas as pd
+        pd.concat([
+            pd.read_csv(i)
+            for i in input['prioritized']
+        ]).to_csv(output['prioritized'], index=False)
 
 
 rule collect_output:
@@ -85,6 +132,7 @@ rule collect_output:
         rules.outrider_plots.output,
         rules.outliers_genes.output,
         rules.compare_literature.output,
-        config['outrider']['results']
+        config['outrider']['results'],
+        config['variants']['prioritized']
     output:
         touch(config['output'] + '/all.done')

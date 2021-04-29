@@ -1,9 +1,10 @@
-vcf: /s/raw/als/kaggle/end-als/genomics-data/AnswerALS_subset_annovar.hg38_anno_and_geno.no_intergenic.vcf
+vcf: /s/raw/als/kaggle/end-als/genomics-data/AnswerALS_subset_annovar.hg38_anno_and_geno.no_intergenic.vcf.gz
 gtf: data/common/Homo_sapiens.GRCh38.84.gtf
 
 metadata:
   dir: /s/raw/als/kaggle/end-als/clinical-data/filtered-metadata/metadata/
   participants: /s/raw/als/kaggle/end-als/clinical-data/filtered-metadata/metadata/aals_participants.csv
+  released_files: /s/raw/als/kaggle/end-als/clinical-data/filtered-metadata/metadata/aals_released_files.csv
 
 transcriptomics:
   gene_count_dir: /s/raw/als/kaggle/end-als/transcriptomics-data/L3_counts/
@@ -21,7 +22,10 @@ output: data/processed
 genes_gtf: data/processed/outrider/outlier_gene_gtf.csv
 
 literature:
-  nature_review: data/processed/nature_review_als_genes.csv
-  wgs: data/processed/wgs_als_genes.csv
+  nature_review: data/processed/literature/nature_review_als_genes.csv
+  wgs: data/processed/literature/wgs_als_genes.csv
 
-vep_variant: /s/project/kaggle-als/vep_annotations/ensembl_bychr.parquet/chrom={chrom}/
+variants:
+  vep: /s/project/kaggle-als/vep_annotations/ensembl_bychr.parquet/chrom={chrom}/
+  prioritized_chrom:  data/processed/variants/prioritized_variants_chrom={chrom}.csv
+  prioritized:  data/processed/variants/prioritized_variants.csv
