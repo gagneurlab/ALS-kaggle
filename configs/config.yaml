@@ -2,6 +2,7 @@ output: data/processed
 
 vcf: /s/raw/als/kaggle/end-als/genomics-data/AnswerALS_subset_annovar.hg38_anno_and_geno.no_intergenic.vcf.gz
 gtf: data/common/Homo_sapiens.GRCh38.84.gtf
+fasta: /s/genomes/human/hg38/GRCh38.primary_assembly.genome.fa
 
 genome:
   ensembl_release: 84
@@ -14,6 +15,9 @@ metadata:
 transcriptomics:
   gene_count_dir: /s/raw/als/kaggle/end-als/transcriptomics-data/L3_counts/
 
+mmsplice:
+  results: data/processed/mmsplice_exon/results.csv
+  
 outrider:
   fpkm_cutoff: 1.5
   padj_cutoff: 0.05

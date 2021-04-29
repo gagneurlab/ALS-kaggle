@@ -13,6 +13,19 @@ rule all:
         config['output'] + '/all.done'
 
 
+rule mmsplice:
+    input:
+        vcf = config['vcf'],
+        fasta = config['fasta'],
+    resources:
+        mem_mb = 32000,
+        threads = 4
+    output:
+        result = config['mmsplice']['results'],
+    script:
+        "scripts/mmsplice.py"
+        
+
 rule merge_gene_counts:
     input:
         count_dir = config['transcriptomics']['gene_count_dir'],
