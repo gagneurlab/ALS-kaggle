@@ -66,7 +66,7 @@ rule outrider_plots:
         ods = rules.outrider.output.ods
     output:
         dim_search = config['output'] + '/outrider/dim_search.png',
-        power = config['output'] + '/outrider/dim_search.png',
+        power = config['output'] + '/outrider/power_analysis.png',
         disp_est = config['output'] + '/outrider/disp_est.png',
         per_sample = config['output'] + '/outrider/aberrant_per_sample.png',
         expr_genes = config['output'] + '/outrider/expr_genes.png',
@@ -75,6 +75,17 @@ rule outrider_plots:
         heatmap_fit = config['output'] + '/outrider/heatmap_fit.png'
     script:
         "scripts/outrider_plots.R"
+
+
+rule network_analysis:
+    input:
+        outliers = rules.outrider.output.results,
+        gene_seed_prob = config['ppi']['gene_seed_prob']
+    output:
+        outliers = config['output'] + '/networkanalysis/expr_outliers.tsv',
+        gene_seed_prob_sub = config['output'] + '/networkanalysis/gene_seed_prob_sub.tsv',
+    script:
+        "scripts/network_analysis.R"
 
 
 rule outliers_genes:
@@ -138,11 +149,13 @@ rule merge_variants:
 
 rule collect_output:
     input:
+        rules.umap.output,
         rules.outrider_plots.output,
         rules.outliers_genes.output,
         rules.compare_literature.output,
         config['outrider']['results'],
-        config['variants']['prioritized']
+        config['variants']['prioritized'],
+        rules.network_analysis.output
     output:
         touch(config['output'] + '/all.done')
 

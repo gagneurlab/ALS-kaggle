@@ -1,5 +1,10 @@
+output: data/processed
+
 vcf: /s/raw/als/kaggle/end-als/genomics-data/AnswerALS_subset_annovar.hg38_anno_and_geno.no_intergenic.vcf.gz
 gtf: data/common/Homo_sapiens.GRCh38.84.gtf
+
+genome:
+  ensembl_release: 84
 
 metadata:
   dir: /s/raw/als/kaggle/end-als/clinical-data/filtered-metadata/metadata/
@@ -15,10 +20,10 @@ outrider:
   counts: data/processed/outrider/gene_counts.tsv
   results: data/processed/outrider/results.tsv
 
-genome:
-  ensembl_release: 84
 
-output: data/processed
+ppi:
+  gene_seed_prob: data/processed/networkanalysis/prob_of_reaching_gene_from_seeds.tsv
+
 genes_gtf: data/processed/outrider/outlier_gene_gtf.csv
 
 literature:
@@ -29,3 +34,4 @@ variants:
   vep: /s/project/kaggle-als/vep_annotations/ensembl_bychr.parquet/chrom={chrom}/
   prioritized_chrom:  data/processed/variants/prioritized_variants_chrom={chrom}.csv
   prioritized:  data/processed/variants/prioritized_variants.csv
+
