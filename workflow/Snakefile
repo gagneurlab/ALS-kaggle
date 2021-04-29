@@ -1,5 +1,3 @@
-workdir: ".."
-
 configfile: "configs/config.yaml"
 
 
@@ -12,8 +10,7 @@ chroms = [
 
 rule all:
     input:
-        config['variants']['prioritized']
-        # config['output'] + '/all.done'
+        config['output'] + '/all.done'
 
 
 rule merge_gene_counts:
@@ -48,7 +45,7 @@ rule outrider:
         results = config['outrider']['results']
     params:
         padj_cutoff = config['outrider']['padj_cutoff']
-    threads: 20
+    threads: 100
     script:
         "scripts/outrider.R"
 
@@ -136,3 +133,16 @@ rule collect_output:
         config['variants']['prioritized']
     output:
         touch(config['output'] + '/all.done')
+
+
+rule dependency:
+    output:
+        dag=multiext('images/dag','.svg','.png'),
+        rulegraph=multiext('images/rulegraph','.svg','.png')
+    shell:
+        """
+        snakemake --dag | dot -Tsvg -Grankdir=TB > {output.dag[0]}
+        snakemake --dag | dot -Tpng -Grankdir=TB > {output.dag[1]}
+        snakemake --rulegraph | dot -Tsvg -Grankdir=TB > {output.rulegraph[0]}
+        snakemake --rulegraph | dot -Tpng -Grankdir=TB > {output.rulegraph[1]}
+        """

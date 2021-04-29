@@ -16,7 +16,7 @@ outrider:
   results: data/processed/outrider/results.tsv
 
 genome:
-  ensembl_release: 103
+  ensembl_release: 84
 
 output: data/processed
 genes_gtf: data/processed/outrider/outlier_gene_gtf.csv
