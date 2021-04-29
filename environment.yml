@@ -14,3 +14,9 @@ dependencies:
   - snakemake==6.2.1
   - pandas==1.2.4
   - pyranges
+  - umap-learn
+  - matplotlib
+  - datashader
+  - bokeh
+  - holoviews
+
