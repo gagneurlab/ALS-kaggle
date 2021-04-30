@@ -84,6 +84,7 @@ rule outrider_plots:
         ods_raw = rules.filter_counts.output.ods,
         ods = rules.outrider.output.ods
     output:
+        qqplot = config['output'] + '/outrider/qqplot.png',
         dim_search = config['output'] + '/outrider/dim_search.png',
         power = config['output'] + '/outrider/power_analysis.png',
         disp_est = config['output'] + '/outrider/disp_est.png',

@@ -5,10 +5,6 @@ suppressPackageStartupMessages({
 
 ods <- readRDS(snakemake@input$ods)
 
-png(snakemake@output$dim_search)
-plotEncDimSearch(ods)
-dev.off()
-
 png(snakemake@output$power)
 plotPowerAnalysis(ods)
 dev.off()
@@ -28,6 +24,14 @@ dev.off()
 png(snakemake@output$per_sample)
 plotAberrantPerSample(ods)
 dev.off()
+
+png(snakemake@output$qqplot)
+plotQQ(ods, global = TRUE)
+dev.off()
+
+
+plotEncDimSearch(ods) + theme_bw()
+ggsave(snakemake@output$dim_search)
 
 plotExpressedGenes(ods)
 ggsave(snakemake@output$expr_genes)
