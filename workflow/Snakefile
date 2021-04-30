@@ -66,9 +66,19 @@ rule filter_counts:
         "scripts/filter_counts.R"
 
 
-rule outrider:
+rule outrider_dim_search:
     input:
         ods = rules.filter_counts.output.ods
+    output:
+        ods = config['output'] + '/outrider/ods_dim_search.RDS',
+    threads: 60
+    script:
+        "scripts/outrider_dim_search.R"
+
+
+rule outrider:
+    input:
+        ods = rules.outrider_dim_search.output.ods
     output:
         ods = config['output'] + '/outrider/ods.RDS',
         results = config['outrider']['results']
@@ -84,6 +94,7 @@ rule outrider_plots:
         ods_raw = rules.filter_counts.output.ods,
         ods = rules.outrider.output.ods
     output:
+        qqplot = config['output'] + '/outrider/qqplot.png',
         dim_search = config['output'] + '/outrider/dim_search.png',
         power = config['output'] + '/outrider/power_analysis.png',
         disp_est = config['output'] + '/outrider/disp_est.png',
