@@ -33,5 +33,5 @@ plotExpressedGenes(ods)
 ggsave(snakemake@output$expr_genes)
 
 res <- results(ods, all = TRUE)
-ggplot(res, aes(pValue)) + geom_histogram(bins = 100)
+ggplot(res, aes(pValue)) + geom_histogram(bins = 100) + theme_classic()
 ggsave(snakemake@output$pvalues)

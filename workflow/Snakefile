@@ -15,6 +15,19 @@ rule all:
         config['output'] + '/all.done'
 
 
+rule mmsplice:
+    input:
+        vcf = config['vcf'],
+        fasta = config['fasta'],
+    resources:
+        mem_mb = 32000,
+        threads = 4
+    output:
+        result = config['mmsplice']['results'],
+    script:
+        "scripts/mmsplice.py"
+
+
 rule merge_gene_counts:
     input:
         count_dir = config['transcriptomics']['gene_count_dir'],
@@ -23,6 +36,16 @@ rule merge_gene_counts:
         counts = config['output'] + '/counts/gene_counts.tsv'
     script:
         "scripts/merge_gene_counts.py"
+
+
+rule umap:
+    input:
+        counts = rules.merge_gene_counts.output.counts
+    output:
+        plot = config['output'] + '/umap/plot.png'
+    threads: 60
+    script:
+        "scripts/umap.py"
 
 
 rule filter_counts:
@@ -58,7 +81,7 @@ rule outrider_plots:
         ods = rules.outrider.output.ods
     output:
         dim_search = config['output'] + '/outrider/dim_search.png',
-        # power = config['output'] + '/outrider/dim_search.png',
+        power = config['output'] + '/outrider/power_analysis.png',
         disp_est = config['output'] + '/outrider/disp_est.png',
         per_sample = config['output'] + '/outrider/aberrant_per_sample.png',
         expr_genes = config['output'] + '/outrider/expr_genes.png',
@@ -67,6 +90,18 @@ rule outrider_plots:
         heatmap_fit = config['output'] + '/outrider/heatmap_fit.png'
     script:
         "scripts/outrider_plots.R"
+
+
+rule network_analysis:
+    input:
+        outliers = rules.outrider.output.results,
+        gene_seed_prob = config['ppi']['gene_seed_prob']
+    output:
+        outliers = config['output'] + '/networkanalysis/expr_outliers.tsv',
+        gene_seed_prob_sub = config['output'] + \
+            '/networkanalysis/gene_seed_prob_sub.tsv',
+    script:
+        "scripts/network_analysis.R"
 
 
 rule outliers_genes:
@@ -135,7 +170,7 @@ rule merge_variants:
 #         genes = config['genes_gtf'],
 #         nature_review = config['literature']['nature_review'],
 #         wgs = config['literature']['wgs'],
-#         string = config['network']['edges'],
+#         ppi = config['ppi']['gene_seed_prob'],
 #         gtf = config['gtf']
 #     output:
 #         results_variants = config['variants']['results_prioritized']
@@ -145,11 +180,13 @@ rule merge_variants:
 
 rule collect_output:
     input:
+        rules.umap.output,
         rules.outrider_plots.output,
         rules.outliers_genes.output,
         rules.compare_literature.output,
         config['outrider']['results'],
-        config['variants']['prioritized']
+        config['variants']['prioritized'],
+        rules.network_analysis.output
     output:
         touch(config['output'] + '/all.done')
 
