@@ -102,7 +102,6 @@ rule outrider:
 
 rule outrider_plots:
     input:
-        ods_raw = rules.filter_counts.output.ods,
         ods = rules.outrider.output.ods
     output:
         qqplot = config['output'] + '/outrider/qqplot.png',
@@ -213,7 +212,6 @@ rule collect_output:
         rules.outrider_plots.output,
         rules.outliers_genes.output,
         rules.compare_literature.output,
-        config['outrider']['results'],
         config['variants']['prioritized'],
         rules.network_analysis.output
     output:
