@@ -66,9 +66,19 @@ rule filter_counts:
         "scripts/filter_counts.R"
 
 
-rule outrider:
+rule outrider_dim_search:
     input:
         ods = rules.filter_counts.output.ods
+    output:
+        ods = config['output'] + '/outrider/ods_dim_search.RDS',
+    threads: 60
+    script:
+        "scripts/outrider_dim_search.R"
+
+
+rule outrider:
+    input:
+        ods = rules.outrider_dim_search.output.ods
     output:
         ods = config['output'] + '/outrider/ods.RDS',
         results = config['outrider']['results']
