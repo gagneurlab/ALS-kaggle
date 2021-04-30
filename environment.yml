@@ -19,4 +19,5 @@ dependencies:
   - datashader
   - bokeh
   - holoviews
+  - r-umap
 
