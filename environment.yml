@@ -20,4 +20,8 @@ dependencies:
   - bokeh
   - holoviews
   - r-umap
+  - nb_conda
+  - nb_conda_kernels
+  - nb_anacondacloud
+  - kipoiseq
 
