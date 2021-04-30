@@ -1,3 +1,5 @@
+workdir: ".."
+
 configfile: "configs/config.yaml"
 
 
@@ -56,7 +58,7 @@ rule outrider_plots:
         ods = rules.outrider.output.ods
     output:
         dim_search = config['output'] + '/outrider/dim_search.png',
-        power = config['output'] + '/outrider/dim_search.png',
+        # power = config['output'] + '/outrider/dim_search.png',
         disp_est = config['output'] + '/outrider/disp_est.png',
         per_sample = config['output'] + '/outrider/aberrant_per_sample.png',
         expr_genes = config['output'] + '/outrider/expr_genes.png',
@@ -126,6 +128,21 @@ rule merge_variants:
         ]).to_csv(output['prioritized'], index=False)
 
 
+# rule variant_outlier:
+#     input:
+#         prioritized = config['variants']['prioritized'],
+#         results = config['outrider']['results'],
+#         genes = config['genes_gtf'],
+#         nature_review = config['literature']['nature_review'],
+#         wgs = config['literature']['wgs'],
+#         string = config['network']['edges'],
+#         gtf = config['gtf']
+#     output:
+#         results_variants = config['variants']['results_prioritized']
+#     notebook:
+#         "notebooks/outlier_prioritized_variants.ipynb"
+
+
 rule collect_output:
     input:
         rules.outrider_plots.output,
@@ -139,8 +156,8 @@ rule collect_output:
 
 rule dependency:
     output:
-        dag=multiext('images/dag','.svg','.png'),
-        rulegraph=multiext('images/rulegraph','.svg','.png')
+        dag = multiext('images/dag', '.svg', '.png'),
+        rulegraph = multiext('images/rulegraph', '.svg', '.png')
     shell:
         """
         snakemake --dag | dot -Tsvg -Grankdir=TB > {output.dag[0]}
