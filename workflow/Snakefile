@@ -1,4 +1,4 @@
-workdir: ".."
+# workdir: ".."
 
 configfile: "configs/config.yaml"
 
@@ -13,6 +13,10 @@ chroms = [
 rule all:
     input:
         config['output'] + '/all.done'
+    shell:
+        """
+        rm {input}
+        """
 
 
 rule mmsplice:
@@ -87,7 +91,8 @@ rule outrider_plots:
         expr_genes = config['output'] + '/outrider/expr_genes.png',
         pvalues = config['output'] + '/outrider/pvalues.png',
         heatmap_raw = config['output'] + '/outrider/heatmap_raw.png',
-        heatmap_fit = config['output'] + '/outrider/heatmap_fit.png'
+        heatmap_fit = config['output'] + '/outrider/heatmap_fit.png',
+        exp_obs_counts = config['output'] + '/outrider/exp_obs_counts.png'
     script:
         "scripts/outrider_plots.R"
 
@@ -97,9 +102,10 @@ rule network_analysis:
         outliers = rules.outrider.output.results,
         gene_seed_prob = config['ppi']['gene_seed_prob']
     output:
-        outliers = config['output'] + '/networkanalysis/expr_outliers.tsv',
+        histogram = config['output'] + '/network_analysis/histogram.png',
+        outliers = config['output'] + '/network_analysis/expr_outliers.tsv',
         gene_seed_prob_sub = config['output'] + \
-            '/networkanalysis/gene_seed_prob_sub.tsv',
+            '/network_analysis/gene_seed_prob_sub.tsv'
     script:
         "scripts/network_analysis.R"
 

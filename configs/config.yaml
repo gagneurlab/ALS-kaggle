@@ -25,7 +25,7 @@ outrider:
   results: data/processed/outrider/results_old.tsv
 
 ppi:
-  gene_seed_prob: data/processed/networkanalysis/prob_of_reaching_gene_from_seeds.tsv
+  gene_seed_prob: data/processed/network_analysis/prob_of_reaching_gene_from_seeds.tsv
 
 genes_gtf: data/processed/outrider/outlier_gene_gtf.csv
 
