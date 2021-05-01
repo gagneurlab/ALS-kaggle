@@ -1,10 +1,11 @@
 suppressPackageStartupMessages({
     library(data.table)
     library(OUTRIDER)
+    library(BiocParallel)
 })
 
 padj_cutoff <- snakemake@params$padj_cutoff
-total_threads <- snakemake@threads
+register(MulticoreParam(snakemake@threads))
 
 ods <- readRDS(snakemake@input$ods)
 
