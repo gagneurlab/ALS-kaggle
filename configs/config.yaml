@@ -22,7 +22,7 @@ outrider:
   fpkm_cutoff: 1.5
   padj_cutoff: 0.05
   counts: data/processed/outrider/gene_counts.tsv
-  results: data/processed/outrider/results_old.tsv
+  results: data/processed/outrider/results.tsv
 
 ppi:
   gene_seed_prob: data/processed/network_analysis/prob_of_reaching_gene_from_seeds.tsv

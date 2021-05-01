@@ -1,4 +1,4 @@
-# workdir: ".."
+workdir: ".."
 
 configfile: "configs/config.yaml"
 
@@ -180,19 +180,18 @@ rule merge_variants:
         ]).to_csv(output['prioritized'], index=False)
 
 
-# rule variant_outlier:
-#     input:
-#         prioritized = config['variants']['prioritized'],
-#         results = config['outrider']['results'],
-#         genes = config['genes_gtf'],
-#         nature_review = config['literature']['nature_review'],
-#         wgs = config['literature']['wgs'],
-#         ppi = config['ppi']['gene_seed_prob'],
-#         gtf = config['gtf']
-#     output:
-#         results_variants = config['variants']['results_prioritized']
-#     notebook:
-#         "notebooks/outlier_prioritized_variants.ipynb"
+rule variant_outlier:
+    input:
+        prioritized = config['variants']['prioritized'],
+        results = config['outrider']['results'],
+        genes = config['genes_gtf'],
+        nature_review = config['literature']['nature_review'],
+        wgs = config['literature']['wgs'],
+        ppi = config['ppi']['gene_seed_prob']
+    output:
+        results_variants = config['variants']['results_prioritized']
+    notebook:
+        "notebooks/outlier_prioritized_variants.ipynb"
 
 
 rule collect_output:
@@ -202,7 +201,7 @@ rule collect_output:
         rules.outliers_genes.output,
         rules.compare_literature.output,
         config['outrider']['results'],
-        config['variants']['prioritized'],
+        config['variants']['results_prioritized'],
         rules.network_analysis.output
     output:
         touch(config['output'] + '/all.done')
