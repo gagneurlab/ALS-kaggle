@@ -147,6 +147,13 @@ rule literature:
         "notebooks/literature.ipynb"
 
 
+rule parse_ALSoD:
+    output:
+        genes = config['literature']['alsod']
+    script:
+        "scripts/parse_alsod.py"
+
+
 rule compare_literature:
     input:
         nature_review = config['literature']['nature_review'],
