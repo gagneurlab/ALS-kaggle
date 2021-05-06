@@ -18,8 +18,11 @@ rule all:
 
 
 rule sample_annotation:
+    input:
+        participants = config['metadata']['participants'],
+        dataportal = config['metadata']['dataportal']
     output:
-        sample_annotation = config['output'] + '/sample_annotation.tsv'
+        merged = config['output'] + '/sample_annotation.tsv'
     script:
         "scripts/sample_annotation.R"
 
@@ -49,10 +52,11 @@ rule merge_gene_counts:
 
 rule umap:
     input:
-        counts = rules.merge_gene_counts.output.counts
+        counts = rules.merge_gene_counts.output.counts,
+        sample_annotation = rules.sample_annotation.output.merged
     output:
-        plot = config['output'] + '/umap/plot.png'
-    threads: 60
+        plot = config['figures'] + '/umap_raw/{annotation_column}.png'
+    threads: 10
     script:
         "scripts/umap.py"
 
@@ -73,11 +77,12 @@ rule filter_counts:
 
 rule umap_sizefactors:
     input:
-        ods = rules.filter_counts.output.ods
+        ods = rules.filter_counts.output.ods,
+        sample_annotation = rules.sample_annotation.output.merged
     output:
-        umap12 = config['output'] + '/umap/plot_centered12.png',
-        umap13 = config['output'] + '/umap/plot_centered13.png',
-        umap23 = config['output'] + '/umap/plot_centered23.png'
+        umap12 = config['figures'] + '/umap_sizefactors/{annotation_column}_12.png',
+        umap13 = config['figures'] + '/umap_sizefactors/{annotation_column}_13.png',
+        umap23 = config['figures'] + '/umap_sizefactors/{annotation_column}_23.png'
     script:
         "scripts/umap_sizefactors.R"
 
@@ -216,10 +221,17 @@ rule variant_outlier:
         "notebooks/outlier_prioritized_variants.ipynb"
 
 
+rule plots:
+    input:
+        expand(rules.umap.output, annotation_column=config['annotation_cols']),
+        expand(rules.umap_sizefactors.output, annotation_column=config['annotation_cols']),
+        rules.outrider_plots.output
+
+
 rule collect_output:
     input:
-        rules.umap.output,
-        rules.umap_sizefactors.output,
+        expand(rules.umap.output, annotation_column=config['annotation_cols']),
+        expand(rules.umap_sizefactors.output, annotation_column=config['annotation_cols']),
         rules.outrider_plots.output,
         rules.outliers_genes.output,
         rules.compare_literature.output,
