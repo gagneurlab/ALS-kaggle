@@ -10,11 +10,15 @@ chroms = [
 
 rule all:
     input:
-        config['output'] + '/all.done'
-    shell:
-        """
-        rm {input}
-        """
+        config['variants']['prioritized']
+        # expand(
+        #     config['variants']['prioritized_chrom'], chrom=chroms)
+        # config['variants']['prioritized']
+        # config['output'] + '/all.done'
+    # shell:
+    #     """
+    #     rm {input}
+    #     """
 
 
 rule mmsplice:
@@ -174,7 +178,8 @@ rule prioritize_vep_variants:
         vep = config['variants']['vep'],
         results = config['outrider']['results'],
         genes = config['genes_gtf'],
-        released_files = config['metadata']['released_files']
+        released_files = config['metadata']['released_files'],
+        mmsplice = config['mmsplice']['results']
     output:
         prioritized = config['variants']['prioritized_chrom']
     notebook:
@@ -202,9 +207,12 @@ rule variant_outlier:
         genes = config['genes_gtf'],
         nature_review = config['literature']['nature_review'],
         wgs = config['literature']['wgs'],
-        ppi = config['ppi']['gene_seed_prob']
+        ppi = config['ppi']['gene_seed_prob'],
+        mmsplice = config['mmsplice']['results'],
+        alsod = config['literature']['alsod']
     output:
-        results_variants = config['variants']['results_prioritized']
+        results_all = config['results_all'],
+        results_variants = config['results_prioritized']
     notebook:
         "notebooks/outlier_prioritized_variants.ipynb"
 
@@ -217,7 +225,7 @@ rule collect_output:
         rules.outliers_genes.output,
         rules.compare_literature.output,
         config['outrider']['results'],
-        config['variants']['results_prioritized'],
+        config['results_prioritized'],
         rules.network_analysis.output
     output:
         touch(config['output'] + '/all.done')
