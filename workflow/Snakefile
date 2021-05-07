@@ -50,7 +50,7 @@ rule merge_gene_counts:
         "scripts/merge_gene_counts.py"
 
 
-rule umap:
+rule umap_raw:
     input:
         counts = rules.merge_gene_counts.output.counts,
         sample_annotation = rules.sample_annotation.output.merged
@@ -221,17 +221,14 @@ rule variant_outlier:
         "notebooks/outlier_prioritized_variants.ipynb"
 
 
-rule plots:
+rule umap:
     input:
-        expand(rules.umap.output, annotation_column=config['annotation_cols']),
-        expand(rules.umap_sizefactors.output, annotation_column=config['annotation_cols']),
-        rules.outrider_plots.output
+        expand(rules.umap_raw.output, annotation_column=config['annotation_cols']),
+        expand(rules.umap_sizefactors.output, annotation_column=config['annotation_cols'])
 
 
 rule collect_output:
     input:
-        expand(rules.umap.output, annotation_column=config['annotation_cols']),
-        expand(rules.umap_sizefactors.output, annotation_column=config['annotation_cols']),
         rules.outrider_plots.output,
         rules.outliers_genes.output,
         rules.compare_literature.output,
