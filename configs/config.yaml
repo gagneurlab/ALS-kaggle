@@ -48,5 +48,7 @@ literature:
 variants:
   vep: /s/project/kaggle-als/vep_annotations/ensembl_bychr.parquet/chrom={chrom}/
   prioritized_chrom:  data/processed/variants/prioritized_variants_chrom={chrom}.csv
-  prioritized:  data/processed/variants/prioritized_variants.csv
-  results_prioritized: data/processed/results_prioritized_variants.csv
+  prioritized: data/processed/variants/prioritized_variants.csv
+
+results_all: data/processed/results_all.csv
+results_prioritized: data/processed/results_prioritized_variants.csv
