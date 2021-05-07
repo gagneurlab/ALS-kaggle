@@ -21,6 +21,13 @@ rule all:
     #     """
 
 
+rule sample_annotation:
+    output:
+        sample_annotation = config['output'] + '/sample_annotation.tsv'
+    script:
+        "scripts/sample_annotation.R"
+
+
 rule mmsplice:
     input:
         vcf = config['vcf'],
