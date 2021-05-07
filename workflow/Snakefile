@@ -244,8 +244,8 @@ rule collect_output:
 
 rule dependency:
     output:
-        dag = multiext('images/dag', '.svg', '.png'),
-        rulegraph = multiext('images/rulegraph', '.svg', '.png')
+        dag = multiext(config['figures'] + '/dependency/dag', '.svg', '.png'),
+        rulegraph = multiext(config['figures'] + '/dependency/rulegraph', '.svg', '.png')
     shell:
         """
         snakemake --dag | dot -Tsvg -Grankdir=TB > {output.dag[0]}
