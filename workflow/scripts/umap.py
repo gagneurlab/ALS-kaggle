@@ -21,11 +21,8 @@ df_samples['dim1'] = embed_counts.embedding_[:, 0]
 df_samples['dim2'] = embed_counts.embedding_[:, 1]
 
 plt.figure(figsize=(5, 5), dpi=250)
-sns.scatterplot(data=df_samples, x="dim1", y="dim2", hue='Case_Control')
-plt.savefig(snakemake.output['plot_case_control'])
-plt.clf()
-
-plt.figure(figsize=(5, 5), dpi=250)
-df = df_samples[~df_samples['Site_of_Onset'].isna()]
-sns.scatterplot(data=df, x="dim1", y="dim2", hue='Site_of_Onset')
-plt.savefig(snakemake.output['plot_bulbar_vs_limb'])
+annotation_column = snakemake.wildcards.annotation_column
+ax = sns.scatterplot(data=df_samples, x="dim1",
+                     y="dim2", hue=annotation_column)
+ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+plt.savefig(snakemake.output['plot'], bbox_inches='tight')

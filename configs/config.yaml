@@ -1,4 +1,5 @@
 output: data/processed
+figures: reports/figures
 
 vcf: /s/raw/als/kaggle/end-als/genomics-data/AnswerALS_subset_annovar.hg38_anno_and_geno.no_intergenic.vcf.gz
 gtf: data/common/Homo_sapiens.GRCh38.84.gtf
@@ -12,8 +13,18 @@ samples: data/processed/sample_annotation.tsv
 metadata:
   dir: /s/raw/als/kaggle/end-als/clinical-data/filtered-metadata/metadata/
   participants: /s/raw/als/kaggle/end-als/clinical-data/filtered-metadata/metadata/aals_participants.csv
+  dataportal: /s/raw/als/kaggle/end-als/clinical-data/filtered-metadata/metadata/aals_dataportal_datatable.csv
   released_files: /s/raw/als/kaggle/end-als/clinical-data/filtered-metadata/metadata/aals_released_files.csv
-  
+
+annotation_cols:
+  - Sex
+  - Batch_ID
+  - Subject_Group
+  - Revised_El_Escorial_Criteria
+  - Site_of_Onset
+  - Primary_Tissue
+  - Case_Control
+
 transcriptomics:
   gene_count_dir: /s/raw/als/kaggle/end-als/transcriptomics-data/L3_counts/
 

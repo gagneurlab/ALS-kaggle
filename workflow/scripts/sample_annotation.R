@@ -5,8 +5,11 @@ suppressPackageStartupMessages({
 DIR <- snakemake@config$metadata$dir
 #DIR <- '/s/raw/als/kaggle/end-als/clinical-data/filtered-metadata/metadata'
 
-# Main sample annotation
-sa_als <- fread(file.path(DIR, 'aals_dataportal_datatable.csv'))
+# Main sample annotations
+sa_participants <- fread(snakemake@input$participants)
+sa_dataportal <- fread(snakemake@input$dataportal)
+
+sa_als <- merge(sa_participants, sa_dataportal)
 colnames(sa_als) <- gsub(' ', '_', colnames(sa_als))
 
 # Relevant genetic/clinical information
@@ -27,4 +30,4 @@ mt <- merge(vit_signs, gene_mut, all = TRUE)
 mt <- merge(mt, med_hist_abbrev, all = TRUE)
 
 sa_als <- merge(sa_als, mt, by = 'Participant_ID', all = TRUE)
-fwrite(sa_als, snakemake@output$sample_annotation, sep = '\t', quote = F)
+fwrite(sa_als, snakemake@output$merged, sep = '\t')
