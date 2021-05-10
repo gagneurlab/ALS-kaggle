@@ -1,3 +1,5 @@
+# workdir: ".."
+
 configfile: "configs/config.yaml"
 
 
@@ -15,6 +17,16 @@ rule all:
         """
         rm {input}
         """
+
+
+rule sample_annotation:
+    input:
+        participants = config['metadata']['participants'],
+        dataportal = config['metadata']['dataportal']
+    output:
+        merged = config['output'] + '/sample_annotation.tsv'
+    script:
+        "scripts/sample_annotation.R"
 
 
 rule mmsplice:
@@ -40,12 +52,13 @@ rule merge_gene_counts:
         "scripts/merge_gene_counts.py"
 
 
-rule umap:
+rule umap_raw:
     input:
-        counts = rules.merge_gene_counts.output.counts
+        counts = rules.merge_gene_counts.output.counts,
+        samples = config['samples']
     output:
-        plot = config['output'] + '/umap/plot.png'
-    threads: 60
+        plot = config['figures'] + '/umap_raw/{annotation_column}.png'
+    threads: 10
     script:
         "scripts/umap.py"
 
@@ -66,11 +79,15 @@ rule filter_counts:
 
 rule umap_sizefactors:
     input:
-        ods = rules.filter_counts.output.ods
+        ods = rules.filter_counts.output.ods,
+        sample_annotation = rules.sample_annotation.output.merged
     output:
-        umap12 = config['output'] + '/umap/plot_centered12.png',
-        umap13 = config['output'] + '/umap/plot_centered13.png',
-        umap23 = config['output'] + '/umap/plot_centered23.png'
+        umap12 = config['figures'] + \
+            '/umap_sizefactors/{annotation_column}_12.png',
+        umap13 = config['figures'] + \
+            '/umap_sizefactors/{annotation_column}_13.png',
+        umap23 = config['figures'] + \
+            '/umap_sizefactors/{annotation_column}_23.png'
     script:
         "scripts/umap_sizefactors.R"
 
@@ -147,6 +164,13 @@ rule literature:
         "notebooks/literature.ipynb"
 
 
+rule parse_ALSoD:
+    output:
+        genes = config['literature']['alsod']
+    script:
+        "scripts/parse_alsod.py"
+
+
 rule compare_literature:
     input:
         nature_review = config['literature']['nature_review'],
@@ -167,7 +191,8 @@ rule prioritize_vep_variants:
         vep = config['variants']['vep'],
         results = config['outrider']['results'],
         genes = config['genes_gtf'],
-        released_files = config['metadata']['released_files']
+        released_files = config['metadata']['released_files'],
+        mmsplice = config['mmsplice']['results']
     output:
         prioritized = config['variants']['prioritized_chrom']
     notebook:
@@ -195,22 +220,31 @@ rule variant_outlier:
         genes = config['genes_gtf'],
         nature_review = config['literature']['nature_review'],
         wgs = config['literature']['wgs'],
-        ppi = config['ppi']['gene_seed_prob']
+        ppi = config['ppi']['gene_seed_prob'],
+        mmsplice = config['mmsplice']['results'],
+        alsod = config['literature']['alsod']
     output:
-        results_variants = config['variants']['results_prioritized']
+        results_all = config['results_all'],
+        results_variants = config['results_prioritized']
     notebook:
         "notebooks/outlier_prioritized_variants.ipynb"
 
 
+rule umap:
+    input:
+        expand(rules.umap_raw.output,
+               annotation_column=config['annotation_cols']),
+        expand(rules.umap_sizefactors.output,
+               annotation_column=config['annotation_cols'])
+
+
 rule collect_output:
     input:
-        rules.umap.output,
-        rules.umap_sizefactors.output,
         rules.outrider_plots.output,
         rules.outliers_genes.output,
         rules.compare_literature.output,
         config['outrider']['results'],
-        config['variants']['results_prioritized'],
+        config['results_prioritized'],
         rules.network_analysis.output
     output:
         touch(config['output'] + '/all.done')
@@ -218,8 +252,9 @@ rule collect_output:
 
 rule dependency:
     output:
-        dag = multiext('images/dag', '.svg', '.png'),
-        rulegraph = multiext('images/rulegraph', '.svg', '.png')
+        dag = multiext(config['figures'] + '/dependency/dag', '.svg', '.png'),
+        rulegraph = multiext(config['figures'] +
+                             '/dependency/rulegraph', '.svg', '.png')
     shell:
         """
         snakemake --dag | dot -Tsvg -Grankdir=TB > {output.dag[0]}
