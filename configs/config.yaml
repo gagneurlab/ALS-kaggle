@@ -8,6 +8,8 @@ fasta: /s/genomes/human/hg38/GRCh38.primary_assembly.genome.fa
 genome:
   ensembl_release: 84
 
+samples: data/processed/sample_annotation.tsv
+  
 metadata:
   dir: /s/raw/als/kaggle/end-als/clinical-data/filtered-metadata/metadata/
   participants: /s/raw/als/kaggle/end-als/clinical-data/filtered-metadata/metadata/aals_participants.csv

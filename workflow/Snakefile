@@ -1,3 +1,5 @@
+# workdir: ".."
+
 configfile: "configs/config.yaml"
 
 
@@ -10,15 +12,11 @@ chroms = [
 
 rule all:
     input:
-        config['variants']['prioritized']
-        # expand(
-        #     config['variants']['prioritized_chrom'], chrom=chroms)
-        # config['variants']['prioritized']
-        # config['output'] + '/all.done'
-    # shell:
-    #     """
-    #     rm {input}
-    #     """
+        config['output'] + '/all.done'
+    shell:
+        """
+        rm {input}
+        """
 
 
 rule sample_annotation:
@@ -57,7 +55,7 @@ rule merge_gene_counts:
 rule umap_raw:
     input:
         counts = rules.merge_gene_counts.output.counts,
-        sample_annotation = rules.sample_annotation.output.merged
+        samples = config['samples']
     output:
         plot = config['figures'] + '/umap_raw/{annotation_column}.png'
     threads: 10
@@ -84,9 +82,12 @@ rule umap_sizefactors:
         ods = rules.filter_counts.output.ods,
         sample_annotation = rules.sample_annotation.output.merged
     output:
-        umap12 = config['figures'] + '/umap_sizefactors/{annotation_column}_12.png',
-        umap13 = config['figures'] + '/umap_sizefactors/{annotation_column}_13.png',
-        umap23 = config['figures'] + '/umap_sizefactors/{annotation_column}_23.png'
+        umap12 = config['figures'] + \
+            '/umap_sizefactors/{annotation_column}_12.png',
+        umap13 = config['figures'] + \
+            '/umap_sizefactors/{annotation_column}_13.png',
+        umap23 = config['figures'] + \
+            '/umap_sizefactors/{annotation_column}_23.png'
     script:
         "scripts/umap_sizefactors.R"
 
@@ -234,8 +235,10 @@ rule variant_outlier:
 
 rule umap:
     input:
-        expand(rules.umap_raw.output, annotation_column=config['annotation_cols']),
-        expand(rules.umap_sizefactors.output, annotation_column=config['annotation_cols'])
+        expand(rules.umap_raw.output,
+               annotation_column=config['annotation_cols']),
+        expand(rules.umap_sizefactors.output,
+               annotation_column=config['annotation_cols'])
 
 
 rule collect_output:
@@ -253,7 +256,8 @@ rule collect_output:
 rule dependency:
     output:
         dag = multiext(config['figures'] + '/dependency/dag', '.svg', '.png'),
-        rulegraph = multiext(config['figures'] + '/dependency/rulegraph', '.svg', '.png')
+        rulegraph = multiext(config['figures'] +
+                             '/dependency/rulegraph', '.svg', '.png')
     shell:
         """
         snakemake --dag | dot -Tsvg -Grankdir=TB > {output.dag[0]}
