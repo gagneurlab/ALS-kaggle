@@ -1,24 +1,40 @@
 suppressPackageStartupMessages({
+    library(data.table)
     library(OUTRIDER)
     library(ggplot2)
 })
 
+anno_groups <- snakemake@params$anno_groups
 ods <- readRDS(snakemake@input$ods)
+sample_annotation <- fread(snakemake@input$sample_annotation)
+sample_annotation <- sample_annotation[, c('Participant_ID', anno_groups), with = FALSE]
+sample_annotation[, Participant_ID := make.names(Participant_ID)]
+
+col_data <- colData(ods)
+col_data <- merge(
+    col_data,
+    sample_annotation,
+    by.x = 'sampleID',
+    by.y = 'Participant_ID',
+    all.x = TRUE
+)
+colData(ods) <- col_data
+colnames(ods) <- col_data$sampleID
 
 png(snakemake@output$power)
 plotPowerAnalysis(ods)
 dev.off()
 
-png(snakemake@output$heatmap_raw)
-plotCountCorHeatmap(ods, normalized = FALSE)
+png(snakemake@output$heatmap_raw, width = 1000, height = 1000)
+plotCountCorHeatmap(ods, normalized = FALSE, colGroups = anno_groups, colColSet = "Set1")
 dev.off()
 
-png(snakemake@output$heatmap_fit)
-plotCountCorHeatmap(ods, normalized = TRUE)
+png(snakemake@output$heatmap_fit, width = 1000, height = 1000)
+plotCountCorHeatmap(ods, normalized = TRUE, colGroups = anno_groups, colColSet = "Set1")
 dev.off()
 
-png(snakemake@output$disp_est)
-plotDispEsts(ods)
+png(snakemake@output$gene_vs_sample, width = 1000, height = 1000)
+plotCountGeneSampleHeatmap(ods, normalized = TRUE, nGenes = 1000, colGroups = anno_groups, colColSet = "Set1")
 dev.off()
 
 png(snakemake@output$per_sample)
