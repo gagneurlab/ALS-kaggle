@@ -1,5 +1,3 @@
-# workdir: ".."
-
 configfile: "configs/config.yaml"
 
 
