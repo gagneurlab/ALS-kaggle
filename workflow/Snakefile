@@ -83,6 +83,7 @@ rule liftover_glow:
         #input_vcf = config['liftover']['filtered_vcf'],
         input_vcf = config['vcf'],
         reference_fasta = config['liftover']['fasta_hg19'],
+        reference_fasta_hg38 = config['fasta'],
     resources:
         mem_mb = 40960,
         threads = 10
@@ -90,6 +91,7 @@ rule liftover_glow:
         max_records_in_ram = 50000,
         chroms = chroms,
     output:
+        normalized_vcf_pq = config['liftover']['normalized_vcf_pq'],
         lifted_vcf = config['liftover']['lifted_vcf'],
         refected_vcf = config['liftover']['refected_vcf'],
     notebook:

@@ -9,6 +9,7 @@ liftover:
   chain_file: /s/raw/ucsc/hg38/liftOver/hg38ToHg19.over.chain.gz
   filtered_vcf: /s/project/kaggle-als/liftover_vcf/filtered_vcf_reheadered.vcf.gz
   filtered_vcf_tbi: /s/project/kaggle-als/liftover_vcf/filtered_vcf_reheadered.vcf.gz.tbi
+  normalized_vcf_pq: /s/project/kaggle-als/liftover_vcf/normalized_vcf_hg38.parquet
   lifted_vcf: /s/project/kaggle-als/liftover_vcf/lifted_vcf_hg19_from_AnswerALS_subset_annovar.hg38_anno_and_geno.no_intergenic.vcf.gz
   refected_vcf: /s/project/kaggle-als/liftover_vcf/rejected_variants_from_liftover.vcf
   #fasta_hg19: /s/genomes/human/hg19/fasta/Homo_sapiens.GRCh37.75.dna_sm.primary_assembly.fa

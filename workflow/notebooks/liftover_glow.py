@@ -16,6 +16,45 @@
 # %%
 import os
 
+import json
+import yaml
+
+import pandas as pd
+import pyspark
+from pyspark.sql import SparkSession
+import pyspark.sql.types as t
+import pyspark.sql.functions as f
+
+import glow
+
+# %%
+snakefile_path = os.getcwd() + "/../Snakefile"
+snakefile_path
+
+# %%
+# del snakemake
+
+# %%
+try:
+    snakemake
+except NameError:
+    from snakemk_util import load_rule_args
+    
+    snakemake = load_rule_args(
+        snakefile = snakefile_path,
+        rule_name = 'liftover_glow',
+        default_wildcards={
+#             'ds_dir': 'noCAT_samplefilter_maxol20_privvar'
+            'ds_dir': 'gtex_noCAT_samplefilter_maxol20_privvar'
+        }
+    )
+
+# %%
+print(json.dumps(snakemake.__dict__, indent=2))
+
+# %%
+import os
+
 try:
     snakemake
 except NameError:
@@ -27,13 +66,6 @@ except NameError:
     )
 
 # %%
-import os
-import pandas as pd
-import pyspark
-from pyspark.sql import SparkSession
-import pyspark.sql.types as t
-import pyspark.sql.functions as f
-import glow
 MEM = os.popen("ulimit -m").read()
 if MEM.startswith("unlimited"):
     print("Memory not constrained, using all available memory...")
@@ -43,6 +75,8 @@ MEM = int(MEM)
 N_CPU = int(os.popen("nproc").read())
 print("memory: %dk" % MEM)
 print("number of cores: %d" % N_CPU)
+
+# %%
 os.environ['PYSPARK_SUBMIT_ARGS'] = " ".join([
     '--driver-memory %dk' % MEM,
     'pyspark-shell'
@@ -64,8 +98,9 @@ spark = (
 #     .config("spark.sql.execution.arrow.enabled", "true")
     .config("spark.sql.execution.arrow.pyspark.enabled", "true")
 #     .config("spark.sql.execution.useObjectHashAggregateExec", "false")
-    .config("spark.network.timeout", "1800s")
+#     .config("spark.network.timeout", "1800s")
     .config("spark.driver.maxResultSize", "48G")
+    .config("spark.default.parallelism", N_CPU / 2)
     .config("spark.files.maxPartitionBytes", 33554432)
 #     .config("spark.databricks.io.cache.enabled", "true") # only enable when local storage is actually on local SSD
     .config("spark.task.maxFailures", MAX_FAILURES)
@@ -84,32 +119,62 @@ df = (
 )
 
 # %%
+df = df.drop("attributes")
+
+# %%
+df.printSchema()
+
+# %%
 df = df.where(
     f.col('contigName').isin(snakemake.params['chroms'])
 )
 
 # %%
+df = glow.transform("split_multiallelics", df)
+df = glow.transform("normalize_variants", df, reference_genome_path=snakemake.input['reference_fasta_hg38'])
+
+# %%
 # sort by chromosome and by location
 df = (
    df
-   .repartitionByRange(4096, f.col("contigName"), f.col("start"))
+   .repartitionByRange(2048, f.col("contigName"), f.col("start"))
    .sortWithinPartitions(["contigName", "start"])
    .persist()
 )
 
 # %%
-# df.printSchema()
+OUTPUT_VCF_PQ_PATH = snakemake.output["normalized_vcf_pq"]
+OUTPUT_VCF_PQ_PATH
 
 # %%
-# df.rdd.getNumPartitions()
+(
+    df
+    .write
+    .parquet(OUTPUT_VCF_PQ_PATH, mode="overwrite", partitionBy=["contigName", ])
+)
 
 # %%
-df = glow.transform("split_multiallelics", df)
-df = glow.transform("normalize_variants", df, reference_genome_path=snakemake.input['reference_fasta'])
+df = (
+    spark
+    .read
+    .format("parquet")
+    .load(OUTPUT_VCF_PQ_PATH)
+)
+
+# %%
+df.rdd.getNumPartitions()
+
+# %%
+df.printSchema()
 
 # %%
 lifted_df = glow.transform('lift_over_variants', df, chain_file=snakemake.input['chain_file'], reference_file=snakemake.input['reference_fasta'])
 
 # %%
+lifted_df.printSchema()
+
+# %%
 # lifted_df.write.format("bigvcf").save(snakemake.output['lifted_vcf'])
-lifted_df.write.format("vcf").save(snakemake.output['lifted_vcf'])
+lifted_df.write.format("vcf").mode("overwrite").save(snakemake.output['lifted_vcf'])
+
+# %%
