@@ -13,7 +13,7 @@ gene_counts = pd.read_table(snakemake.input['counts'], sep='\t')
 del gene_counts['gene_id']
 
 X = gene_counts.transpose()
-embed_counts = umap.UMAP().fit(X)
+embed_counts = umap.UMAP(random_state=42).fit(X)
 
 df_samples = pd.read_csv(snakemake.input['samples'], sep='\t')
 df_samples = df_samples.set_index('Participant_ID').loc[gene_counts.columns]
