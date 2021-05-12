@@ -121,13 +121,15 @@ rule outrider_plots:
         qqplot = config['figures'] + '/outrider/qqplot.png',
         dim_search = config['figures'] + '/outrider/dim_search.png',
         power = config['figures'] + '/outrider/power_analysis.png',
-        gene_vs_sample = config['figures'] + '/outrider/gene_vs_sample.png',
         per_sample = config['figures'] + '/outrider/aberrant_per_sample.png',
         expr_genes = config['figures'] + '/outrider/expr_genes.png',
         pvalues = config['figures'] + '/outrider/pvalues.png',
+        exp_obs_counts = config['figures'] + '/outrider/exp_obs_counts.png',
+        bcv = config['figures'] + '/outrider/bcv.png',
+        bcv_dt = config['figures'] + '/outrider/bcv_dt.tsv',
+        gene_vs_sample = config['figures'] + '/outrider/gene_vs_sample.png',
         heatmap_raw = config['figures'] + '/outrider/heatmap_raw.png',
         heatmap_fit = config['figures'] + '/outrider/heatmap_fit.png',
-        exp_obs_counts = config['figures'] + '/outrider/exp_obs_counts.png'
     params:
         anno_groups = config['annotation_cols']
     script:

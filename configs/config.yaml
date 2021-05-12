@@ -19,7 +19,7 @@ metadata:
 annotation_cols:
   - Sex
   - Batch_ID
-  - Subject_Group
+#  - Subject_Group
   - Revised_El_Escorial_Criteria
   - Site_of_Onset
   - Primary_Tissue
