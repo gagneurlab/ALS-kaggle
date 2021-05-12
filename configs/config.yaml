@@ -5,6 +5,17 @@ vcf: /s/raw/als/kaggle/end-als/genomics-data/AnswerALS_subset_annovar.hg38_anno_
 gtf: data/common/Homo_sapiens.GRCh38.84.gtf
 fasta: /s/genomes/human/hg38/GRCh38.primary_assembly.genome.fa
 
+liftover:
+  chain_file: /s/raw/ucsc/hg38/liftOver/hg38ToHg19.over.chain.gz
+  filtered_vcf: /s/project/kaggle-als/liftover_vcf/filtered_vcf_reheadered.vcf.gz
+  filtered_vcf_tbi: /s/project/kaggle-als/liftover_vcf/filtered_vcf_reheadered.vcf.gz.tbi
+  lifted_vcf: /s/project/kaggle-als/liftover_vcf/lifted_vcf_hg19_from_AnswerALS_subset_annovar.hg38_anno_and_geno.no_intergenic.vcf.gz
+  refected_vcf: /s/project/kaggle-als/liftover_vcf/rejected_variants_from_liftover.vcf
+  #fasta_hg19: /s/genomes/human/hg19/fasta/Homo_sapiens.GRCh37.75.dna_sm.primary_assembly.fa
+  #reference_dict: /s/genomes/human/hg19/fasta/Homo_sapiens.GRCh37.75.dna_sm.primary_assembly_reference.dict
+  fasta_hg19: /s/project/kaggle-als/GRCh37.p13.genome.fa
+  reference_dict: /s/project/kaggle-als/GRCh37.p13.genome.dict
+  
 genome:
   ensembl_release: 84
 
@@ -28,6 +39,9 @@ transcriptomics:
 
 mmsplice:
   results: data/processed/mmsplice_exon/results.csv
+  splice_maps_3: data/splice_maps/{tissue}_junction_annotation3_kn_event-filter=gaussian_mixture.csv
+  splice_maps_5: data/splice_maps/{tissue}_junction_annotation5_kn_event-filter=gaussian_mixture.csv
+  results_splice_map: data/processed/mmsplice_splice_map/results.csv
   
 outrider:
   fpkm_cutoff: 1.5

@@ -1,3 +1,5 @@
+workdir: '..'
+
 configfile: "configs/config.yaml"
 
 
@@ -7,10 +9,16 @@ chroms = [
     'chr15', 'chr16', 'chr17', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22', 'chrX'
 ]
 
+splice_map_tissues, = glob_wildcards(str(config['mmsplice']['splice_maps_3']))
+print(splice_map_tissues)
 
 rule all:
     input:
-        config['variants']['prioritized']
+        #config['liftover']['reference_dict'],
+        #config['liftover']['filtered_vcf_tbi'],
+        #config['liftover']['filtered_vcf']
+        config['liftover']['lifted_vcf'],
+        #config['variants']['prioritized']
         # expand(
         #     config['variants']['prioritized_chrom'], chrom=chroms)
         # config['variants']['prioritized']
@@ -20,6 +28,92 @@ rule all:
     #     rm {input}
     #     """
 
+
+rule liftover_create_dict:
+    input:
+        reference_fasta = config['liftover']['fasta_hg19'],
+    output:
+        reference_dict = config['liftover']['reference_dict'],
+    shell:
+        "picard CreateSequenceDictionary REFERENCE={input.reference_fasta} OUTPUT={output.reference_dict}"
+
+
+rule filter_vcf_canonical:
+    input:
+        input_vcf = config['vcf'],
+    params:
+        chroms = ','.join(chroms),
+    output:
+        filtered_vcf = config['liftover']['filtered_vcf'],
+    shell:
+        "bcftools view {input.input_vcf} --regions {params.chroms} | bgzip > {output.filtered_vcf}"
+
+
+rule index_filter_vcf_canonical:
+    input:
+        filtered_vcf = config['liftover']['filtered_vcf'],
+    output:
+        filtered_vcf_tbi = config['liftover']['filtered_vcf_tbi'],
+    shell:
+        "tabix -p vcf {input.filtered_vcf}"
+        
+
+rule liftover:
+    input:
+        chain_file = config['liftover']['chain_file'],
+        #input_vcf = config['liftover']['filtered_vcf_tbi'],
+        input_vcf = config['liftover']['filtered_vcf'],
+        reference_fasta = config['liftover']['fasta_hg19'],
+    resources:
+        mem_mb = 40960,
+        threads = 10
+    params:
+        max_records_in_ram = 50000,
+    output:
+        lifted_vcf = config['liftover']['lifted_vcf'],
+        refected_vcf = config['liftover']['refected_vcf'],
+    shell:
+        "picard LiftoverVcf I={input.input_vcf} O={output.lifted_vcf} CHAIN={input.chain_file} REJECT={output.refected_vcf} R={input.reference_fasta} MAX_RECORDS_IN_RAM={params.max_records_in_ram} -Xmx40g"
+        
+        
+rule liftover_glow:
+    input:
+        chain_file = config['liftover']['chain_file'],
+        #input_vcf = config['liftover']['filtered_vcf_tbi'],
+        #input_vcf = config['liftover']['filtered_vcf'],
+        input_vcf = config['vcf'],
+        reference_fasta = config['liftover']['fasta_hg19'],
+    resources:
+        mem_mb = 40960,
+        threads = 10
+    params:
+        max_records_in_ram = 50000,
+        chroms = chroms,
+    output:
+        lifted_vcf = config['liftover']['lifted_vcf'],
+        refected_vcf = config['liftover']['refected_vcf'],
+    notebook:
+        "notebooks/liftover_glow.ipynb"
+
+
+rule mmsplice_splice_maps:
+    input:
+        vcf = config['liftover']['lifted_vcf'],
+        fasta = config['fasta'],
+        ref_table3 = expand(str(config['mmsplice']['splice_maps_3']),\
+            tissue=splice_map_tissues),
+        ref_table5 = expand(str(config['mmsplice']['splice_maps_5']),\
+            tissue=splice_map_tissues),
+    resources:
+        mem_mb = 32000,
+        threads = 4
+    output:
+        result = config['mmsplice']['results_splice_map'],
+    script:
+        "scripts/mmsplice_splice_maps.py"
+    #notebook:
+    #    "notebooks/mmsplice_splice_maps.ipynb"
+        
 
 rule sample_annotation:
     input:
@@ -159,8 +253,8 @@ rule literature:
     output:
         nature_review = config['literature']['nature_review'],
         wgs = config['literature']['wgs']
-    notebook:
-        "notebooks/literature.ipynb"
+    #notebook:
+    #    "notebooks/literature.ipynb"
 
 
 rule parse_ALSoD:
@@ -180,8 +274,8 @@ rule compare_literature:
         nature_review = config['output'] + \
             '/literature_overlap_nature_review.txt',
         wgs = config['output'] + '/literature_overlap_wgs.txt'
-    notebook:
-        "notebooks/compare_literature.ipynb"
+    #notebook:
+    #    "notebooks/compare_literature.ipynb"
 
 
 rule prioritize_vep_variants:
@@ -194,8 +288,8 @@ rule prioritize_vep_variants:
         mmsplice = config['mmsplice']['results']
     output:
         prioritized = config['variants']['prioritized_chrom']
-    notebook:
-        "notebooks/prioritized_variants.ipynb"
+    #notebook:
+    #    "notebooks/prioritized_variants.ipynb"
 
 
 rule merge_variants:
@@ -225,8 +319,8 @@ rule variant_outlier:
     output:
         results_all = config['results_all'],
         results_variants = config['results_prioritized']
-    notebook:
-        "notebooks/outlier_prioritized_variants.ipynb"
+    #notebook:
+    #    "notebooks/outlier_prioritized_variants.ipynb"
 
 
 rule umap:
@@ -247,14 +341,14 @@ rule collect_output:
         touch(config['output'] + '/all.done')
 
 
-rule dependency:
-    output:
-        dag = multiext(config['figures'] + '/dependency/dag', '.svg', '.png'),
-        rulegraph = multiext(config['figures'] + '/dependency/rulegraph', '.svg', '.png')
-    shell:
-        """
-        snakemake --dag | dot -Tsvg -Grankdir=TB > {output.dag[0]}
-        snakemake --dag | dot -Tpng -Grankdir=TB > {output.dag[1]}
-        snakemake --rulegraph | dot -Tsvg -Grankdir=TB > {output.rulegraph[0]}
-        snakemake --rulegraph | dot -Tpng -Grankdir=TB > {output.rulegraph[1]}
-        """
+#rule dependency:
+#    output:
+#        dag = multiext(config['figures'] + '/dependency/dag', '.svg', '.png'),
+#        rulegraph = multiext(config['figures'] + '/dependency/rulegraph', '.svg', '.png')
+#    shell:
+#        """
+#        snakemake --dag | dot -Tsvg -Grankdir=TB > {output.dag[0]}
+#        snakemake --dag | dot -Tpng -Grankdir=TB > {output.dag[1]}
+#        snakemake --rulegraph | dot -Tsvg -Grankdir=TB > {output.rulegraph[0]}
+#        snakemake --rulegraph | dot -Tpng -Grankdir=TB > {output.rulegraph[1]}
+#        """
