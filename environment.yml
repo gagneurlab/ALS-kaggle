@@ -6,6 +6,7 @@ channels:
 dependencies:
   - python=3.7.10
   - r-base>=4.0.0
+  - r-essentials
   - r-data.table
   - r-ggplot2
   - bioconductor-outrider >=1.6.1
@@ -24,4 +25,5 @@ dependencies:
   - nb_conda_kernels
   - nb_anacondacloud
   - kipoiseq
-
+  - pip:
+    - snakemk-util
