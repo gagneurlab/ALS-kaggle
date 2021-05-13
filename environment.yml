@@ -24,4 +24,5 @@ dependencies:
   - nb_conda_kernels
   - nb_anacondacloud
   - kipoiseq
-
+  - pip:
+    - snakemk-util
