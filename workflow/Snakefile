@@ -1,3 +1,5 @@
+import itertools
+
 configfile: "configs/config.yaml"
 
 
@@ -115,8 +117,7 @@ rule outrider:
 
 rule outrider_plots:
     input:
-        ods = rules.outrider.output.ods,
-        sample_annotation = rules.sample_annotation.output.merged
+        ods = rules.outrider.output.ods
     output:
         qqplot = config['figures'] + '/outrider/qqplot.png',
         dim_search = config['figures'] + '/outrider/dim_search.png',
@@ -124,7 +125,18 @@ rule outrider_plots:
         per_sample = config['figures'] + '/outrider/aberrant_per_sample.png',
         expr_genes = config['figures'] + '/outrider/expr_genes.png',
         pvalues = config['figures'] + '/outrider/pvalues.png',
-        exp_obs_counts = config['figures'] + '/outrider/exp_obs_counts.png',
+        exp_obs_counts = config['figures'] + '/outrider/exp_obs_counts.png'
+    params:
+        anno_groups = config['annotation_cols']
+    script:
+        "scripts/outrider_plots.R"
+
+
+rule outrider_heatmaps:
+    input:
+        ods = rules.outrider.output.ods,
+        sample_annotation = rules.sample_annotation.output.merged
+    output:
         bcv = config['figures'] + '/outrider/bcv.png',
         bcv_dt = config['figures'] + '/outrider/bcv_dt.tsv',
         gene_vs_sample = config['figures'] + '/outrider/gene_vs_sample.png',
@@ -133,7 +145,8 @@ rule outrider_plots:
     params:
         anno_groups = config['annotation_cols']
     script:
-        "scripts/outrider_plots.R"
+        "scripts/outrider_heatmaps.R"
+
 
 
 rule network_analysis:
