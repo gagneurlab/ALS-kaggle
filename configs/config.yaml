@@ -1,14 +1,14 @@
 output: data/processed
 figures: reports/figures
 
+plots: true  # whether to inlude plotting rules in dependency graph
+
 vcf: /s/raw/als/kaggle/end-als/genomics-data/AnswerALS_subset_annovar.hg38_anno_and_geno.no_intergenic.vcf.gz
 gtf: data/common/Homo_sapiens.GRCh38.84.gtf
 fasta: /s/genomes/human/hg38/GRCh38.primary_assembly.genome.fa
 
 genome:
   ensembl_release: 84
-
-samples: data/processed/sample_annotation.tsv
   
 metadata:
   dir: /s/raw/als/kaggle/end-als/clinical-data/filtered-metadata/metadata/
@@ -18,12 +18,13 @@ metadata:
 
 annotation_cols:
   - Sex
-  - Batch_ID
-#  - Subject_Group
+  # - Batch_ID
   - Revised_El_Escorial_Criteria
   - Site_of_Onset
   - Primary_Tissue
   - Case_Control
+  - Race
+  - Age
 
 transcriptomics:
   gene_count_dir: /s/raw/als/kaggle/end-als/transcriptomics-data/L3_counts/

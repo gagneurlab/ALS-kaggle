@@ -55,7 +55,7 @@ rule merge_gene_counts:
 rule umap_raw:
     input:
         counts = rules.merge_gene_counts.output.counts,
-        samples = config['samples']
+        samples = rules.sample_annotation.output.merged
     output:
         plot = config['figures'] + '/umap_raw/{annotation_column}.png'
     threads: 10
@@ -146,7 +146,6 @@ rule outrider_heatmaps:
         anno_groups = config['annotation_cols']
     script:
         "scripts/outrider_heatmaps.R"
-
 
 
 rule network_analysis:
@@ -254,27 +253,49 @@ rule umap:
                annotation_column=config['annotation_cols'])
 
 
-rule collect_output:
+rule plots:
     input:
+        rules.umap.input,
         rules.outrider_plots.output,
+        rules.outrider_heatmaps.output
+
+
+def get_output(wildcards):
+    out_objs = [
         rules.outliers_genes.output,
         rules.compare_literature.output,
         config['outrider']['results'],
         config['results_prioritized'],
         rules.network_analysis.output
+    ]
+    
+    if config['plots'] is True:
+        out_objs.extend(rules.plots.input)
+    
+    out_objs = [[x] if isinstance(x, str) else list(x) for x in out_objs]
+    return list(itertools.chain(*out_objs))
+
+
+rule collect_output:
+    input: get_output
     output:
         touch(config['output'] + '/all.done')
 
 
 rule dependency:
     output:
-        dag = multiext(config['figures'] + '/dependency/dag', '.svg', '.png'),
-        rulegraph = multiext(config['figures'] +
-                             '/dependency/rulegraph', '.svg', '.png')
+        dag = [
+            config['figures'] + '/dependency/dag.png',
+            config['figures'] + '/dependency/dag_plots.png'
+        ],
+        rulegraph = [
+            config['figures'] + '/dependency/rulegraph.png',
+            config['figures'] + '/dependency/rulegraph_plots.png'
+        ]
     shell:
         """
-        snakemake --dag | dot -Tsvg -Grankdir=TB > {output.dag[0]}
-        snakemake --dag | dot -Tpng -Grankdir=TB > {output.dag[1]}
-        snakemake --rulegraph | dot -Tsvg -Grankdir=TB > {output.rulegraph[0]}
-        snakemake --rulegraph | dot -Tpng -Grankdir=TB > {output.rulegraph[1]}
+        snakemake --config plots=False --dag | dot -Tpng -Grankdir=TB > {output.dag[0]}
+        snakemake --config plots=True --dag | dot -Tpng -Grankdir=TB > {output.dag[1]}
+        snakemake --config plots=False --rulegraph | dot -Tpng -Grankdir=TB > {output.rulegraph[0]}
+        snakemake --config plots=True --rulegraph | dot -Tpng -Grankdir=TB > {output.rulegraph[1]}
         """
