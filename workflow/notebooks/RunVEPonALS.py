@@ -33,6 +33,10 @@ import glow
 snakefile_path = os.getcwd() + "/../Snakefile"
 snakefile_path
 
+# +
+# del snakemake
+# -
+
 try:
     snakemake
 except NameError:
@@ -88,13 +92,8 @@ spark = (
 )
 glow.register(spark)
 spark
-
-
-# +
-# INPUT_VCF  = '/s/raw/als/kaggle/end-als/genomics-data/AnswerALS_subset_annovar.hg38_anno_and_geno.no_intergenic.vcf.gz'
-# OUTPUT_PATH = '/s/project/kaggle-als/vep_annotations/'
-# OUTPUT_PQ = OUTPUT_PATH + "/ensembl_bychr.parquet"
 # -
+
 
 INPUT_VCF  = snakemake.input["vcf"]
 INPUT_VCF
@@ -103,24 +102,23 @@ OUTPUT_PQ = snakemake.output["vep"]
 OUTPUT_PQ
 
 # +
-# HUMAN_GENOME_VERSION="hg19"
-# ASSEMBLY="GRCh37"
-HUMAN_GENOME_VERSION="hg38"
-ASSEMBLY="GRCh38"
-
-GNOMAD_VCF=f"/s/raw/gnomad/2.1.1/{HUMAN_GENOME_VERSION}/gnomad.genomes.r2.1.1.sites.vcf.gz"
 FASTA=snakemake.input["fasta"]
 GTF=snakemake.input["gtf"]
+
+HUMAN_GENOME_VERSION=snakemake.params["human_genome_version"]
+ASSEMBLY=snakemake.params["assembly"]
+
+VEP_CACHE=snakemake.params["vep_cache"]
+LOFTEE_DATA_DIR=snakemake.params["loftee_data_dir"]
+CADD_DIR=snakemake.params["cadd_dir"]
+GNOMAD_VCF=snakemake.params["gnomad_vcf"]
 VEP_CMD = snakemake.params["vep_annotate_cmd"]
 
-VEP_CACHE="/opt/modules/i12g/conda-ensembl-vep/99/cachedir"
-VEP_PLUGIN_DIR=f"{VEP_CACHE}/Plugins/99_GRCh38"
+VEP_PLUGIN_DIR=f"{VEP_CACHE}/Plugins/99_{ASSEMBLY}"
 
-LOFTEE_DATA_DIR=f"/s/raw/loftee/{ASSEMBLY}"
 LOFTEE_PATH=f"{VEP_PLUGIN_DIR}/loftee"
 MAXENTSCAN_DATA_DIR=f"{LOFTEE_PATH}/maxEntScan"
 
-CADD_DIR=f"/s/raw/cadd/v1.6/{ASSEMBLY}"
 CADD_WGS_SNV=f"{CADD_DIR}/whole_genome_SNVs.tsv.gz"
 CADD_INDEL={
     "GRCh37": f"{CADD_DIR}/InDels.tsv.gz",
@@ -168,7 +166,7 @@ vep_cmd=" ".join([
 #     "--plugin " + ",".join([
 #         "LoF",
 #         f"loftee_path:{LOFTEE_PATH}",
-#         f"gerp_bigwig:{LOFTEE_DATA_DIR}/gerp_conservation_scores.homo_sapiens.GRCh38.bw",
+#         f"gerp_bigwig:{LOFTEE_DATA_DIR}/gerp_conservation_scores.homo_sapiens.{ASSEMBLY}.bw",
 #         f"human_ancestor_fa:{LOFTEE_DATA_DIR}/human_ancestor.fa.gz",
 #         f"conservation_file:{LOFTEE_DATA_DIR}/loftee.sql",
 #     ]),
