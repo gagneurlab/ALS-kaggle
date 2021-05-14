@@ -3,12 +3,14 @@ End ALS Kaggle Challenge
 
 **When the outlier is the signal**
 
+[TODO: introduction & motivation]
+
 Installation
 ------------
 
 Please install the following conda environment from the repository root.
 
-```console
+```commandline
 conda env create -f environment.yml
 ```
 
