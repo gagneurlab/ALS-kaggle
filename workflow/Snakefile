@@ -19,6 +19,7 @@ rule all:
         rm {input}
         """
 
+### Preprocessing
 
 rule sample_annotation:
     input:
@@ -30,19 +31,6 @@ rule sample_annotation:
         "scripts/sample_annotation.R"
 
 
-rule mmsplice:
-    input:
-        vcf = config['vcf'],
-        fasta = config['fasta'],
-    resources:
-        mem_mb = 32000,
-        threads = 4
-    output:
-        result = config['mmsplice']['results'],
-    script:
-        "scripts/mmsplice.py"
-
-
 rule merge_gene_counts:
     input:
         count_dir = config['transcriptomics']['gene_count_dir'],
@@ -51,17 +39,6 @@ rule merge_gene_counts:
         counts = config['output'] + '/counts/gene_counts.tsv'
     script:
         "scripts/merge_gene_counts.py"
-
-
-rule umap_raw:
-    input:
-        counts = rules.merge_gene_counts.output.counts,
-        samples = rules.sample_annotation.output.merged
-    output:
-        plot = config['figures'] + '/umap_raw/{annotation_column}.png'
-    threads: 10
-    script:
-        "scripts/umap.py"
 
 
 rule filter_counts:
@@ -78,6 +55,19 @@ rule filter_counts:
         "scripts/filter_counts.R"
 
 
+### UMAP
+
+rule umap_raw:
+    input:
+        counts = rules.merge_gene_counts.output.counts,
+        samples = rules.sample_annotation.output.merged
+    output:
+        plot = config['figures'] + '/umap_raw/{annotation_column}.png'
+    threads: 10
+    script:
+        "scripts/umap.py"
+
+
 rule umap_sizefactors:
     input:
         ods = rules.filter_counts.output.ods,
@@ -92,6 +82,8 @@ rule umap_sizefactors:
     script:
         "scripts/umap_sizefactors.R"
 
+
+### OUTRIDER
 
 rule outrider_dim_search:
     input:
@@ -147,7 +139,8 @@ rule outrider_heatmaps:
         anno_groups = config['annotation_cols']
     script:
         "scripts/outrider_heatmaps.R"
-        
+
+
 rule outrider_samples_plot:
     input:
         ods = rules.outrider.output.ods
@@ -155,19 +148,6 @@ rule outrider_samples_plot:
         samples_plot = config['figures'] + '/outrider/candidate_samples.png'
     script:
         "scripts/samples_plot.R"        
-
-
-rule network_analysis:
-    input:
-        outliers = rules.outrider.output.results,
-        gene_seed_prob = config['ppi']['gene_seed_prob']
-    output:
-        histogram = config['output'] + '/network_analysis/histogram.png',
-        outliers = config['output'] + '/network_analysis/expr_outliers.tsv',
-        gene_seed_prob_sub = config['output'] + \
-            '/network_analysis/gene_seed_prob_sub.tsv'
-    script:
-        "scripts/network_analysis.R"
 
 
 rule outliers_genes:
@@ -179,6 +159,8 @@ rule outliers_genes:
     script:
         "scripts/genes_gtf.py"
 
+
+### Know Genes
 
 rule literature:
     output:
@@ -208,6 +190,9 @@ rule compare_literature:
     notebook:
         "notebooks/compare_literature.ipynb"
 
+
+### Variant Annotation
+
 rule annotate_variants_with_vep:
     input:
         vcf = config['vcf'],
@@ -234,6 +219,20 @@ rule annotate_variants_with_vep:
         vep = directory(config['variants']['vep_pq']),
     notebook:
         "notebooks/RunVEPonALS.ipynb"
+
+
+rule mmsplice:
+    input:
+        vcf = config['vcf'],
+        fasta = config['fasta'],
+    resources:
+        mem_mb = 32000,
+        threads = 4
+    output:
+        result = config['mmsplice']['results'],
+    script:
+        "scripts/mmsplice.py"
+
 
 rule prioritize_vep_variants:
     input:
@@ -280,6 +279,23 @@ rule variant_outlier:
         "notebooks/outlier_prioritized_variants.ipynb"
 
 
+### PPI Network Analysis
+
+rule network_analysis:
+    input:
+        outliers = rules.outrider.output.results,
+        gene_seed_prob = config['ppi']['gene_seed_prob']
+    output:
+        histogram = config['output'] + '/network_analysis/histogram.png',
+        outliers = config['output'] + '/network_analysis/expr_outliers.tsv',
+        gene_seed_prob_sub = config['output'] + \
+            '/network_analysis/gene_seed_prob_sub.tsv'
+    script:
+        "scripts/network_analysis.R"
+
+
+### Collect Outputs
+
 rule umap:
     input:
         expand(rules.umap_raw.output,
@@ -316,6 +332,8 @@ rule collect_output:
     output:
         touch(config['output'] + '/all.done')
 
+
+### Dependency Graphs
 
 rule dependency:
     output:
