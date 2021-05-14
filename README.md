@@ -12,7 +12,7 @@ Please install the following conda environment from the repository root.
 conda env create -f environment.yml
 ```
 
-**Note:** You can alternatively use [mamba](https://mamba.readthedocs.io/en/latest/index.html) for faster install times, if you prefer.
+**Note:** You can alternatively use [mamba](https://mamba.readthedocs.io/en/latest/index.html) for faster install times.
 
 Run the pipeline
 ----------------
