@@ -146,6 +146,14 @@ rule outrider_heatmaps:
         anno_groups = config['annotation_cols']
     script:
         "scripts/outrider_heatmaps.R"
+        
+rule outrider_samples_plot:
+    input:
+        ods = rules.outrider.output.ods
+    output:
+        samples_plot = config['figures'] + '/outrider/candidate_samples.png'
+    script:
+        "scripts/samples_plot.R"        
 
 
 rule network_analysis:
