@@ -14,9 +14,6 @@ liftover:
   lifted_vcf_combined: /s/project/kaggle-als/liftover_vcf/lifted_vcf_hg19_from_AnswerALS_subset_annovar.hg38_anno_and_geno.no_intergenic.combined.vcf
   lifted_vcf_combined_bgzip: /s/project/kaggle-als/liftover_vcf/lifted_vcf_hg19_from_AnswerALS_subset_annovar.hg38_anno_and_geno.no_intergenic.combined.vcf.gz
   lifted_vcf_combined_bgzip_tabix: /s/project/kaggle-als/liftover_vcf/lifted_vcf_hg19_from_AnswerALS_subset_annovar.hg38_anno_and_geno.no_intergenic.combined.vcf.gz.tbi
-  refected_vcf: /s/project/kaggle-als/liftover_vcf/rejected_variants_from_liftover.vcf
-  #fasta_hg19: /s/genomes/human/hg19/fasta/Homo_sapiens.GRCh37.75.dna_sm.primary_assembly.fa
-  #reference_dict: /s/genomes/human/hg19/fasta/Homo_sapiens.GRCh37.75.dna_sm.primary_assembly_reference.dict
   fasta_hg19: /s/project/kaggle-als/GRCh37.p13.genome.fa
   reference_dict: /s/project/kaggle-als/GRCh37.p13.genome.dict
   
@@ -45,7 +42,11 @@ mmsplice:
   results: data/processed/mmsplice_exon/results.csv
   splice_maps_3: data/splice_maps/{tissue}_junction_annotation3_kn_event-filter=gaussian_mixture.csv
   splice_maps_5: data/splice_maps/{tissue}_junction_annotation5_kn_event-filter=gaussian_mixture.csv
+  combined_splice_maps_3: data/splice_maps/combined_splice_maps_3_kn_event-filter=gaussian_mixture.csv
+  combined_splice_maps_5: data/splice_maps/combined_splice_maps_5_kn_event-filter=gaussian_mixture.csv
   results_splice_map: data/processed/mmsplice_splice_map/results.csv
+  gnomad_maf_db: /data/cephrbg/project/gtex-processed/mmsplice-scripts/data/processed/maf.db
+  results_splice_map_gene: data/processed/mmsplice_splice_map/{tissue}_results_gene.csv
   
 outrider:
   fpkm_cutoff: 1.5

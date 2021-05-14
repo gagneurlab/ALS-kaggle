@@ -10,14 +10,16 @@ chroms = [
 ]
 
 splice_map_tissues, = glob_wildcards(str(config['mmsplice']['splice_maps_3']))
-print(splice_map_tissues)
+
 
 rule all:
     input:
-        #config['liftover']['reference_dict'],
-        #config['liftover']['filtered_vcf_tbi'],
-        #config['liftover']['filtered_vcf']
-        config['liftover']['lifted_vcf'],
+        #config['mmsplice']['combined_splice_maps_5'],
+        config['mmsplice']['results_splice_map'],
+        #expand(str(config['mmsplice']['results_splice_map_gene']),
+        #           tissue=splice_map_tissues),
+        #expand(str(config['mmsplice']['results_splice_map_part']),\
+        #    part_vcf = parts_vcf[0]),
         #config['variants']['prioritized']
         # expand(
         #     config['variants']['prioritized_chrom'], chrom=chroms)
@@ -36,51 +38,11 @@ rule liftover_create_dict:
         reference_dict = config['liftover']['reference_dict'],
     shell:
         "picard CreateSequenceDictionary REFERENCE={input.reference_fasta} OUTPUT={output.reference_dict}"
-
-
-rule filter_vcf_canonical:
-    input:
-        input_vcf = config['vcf'],
-    params:
-        chroms = ','.join(chroms),
-    output:
-        filtered_vcf = config['liftover']['filtered_vcf'],
-    shell:
-        "bcftools view {input.input_vcf} --regions {params.chroms} | bgzip > {output.filtered_vcf}"
-
-
-rule index_filter_vcf_canonical:
-    input:
-        filtered_vcf = config['liftover']['filtered_vcf'],
-    output:
-        filtered_vcf_tbi = config['liftover']['filtered_vcf_tbi'],
-    shell:
-        "tabix -p vcf {input.filtered_vcf}"
-        
-
-rule liftover:
-    input:
-        chain_file = config['liftover']['chain_file'],
-        #input_vcf = config['liftover']['filtered_vcf_tbi'],
-        input_vcf = config['liftover']['filtered_vcf'],
-        reference_fasta = config['liftover']['fasta_hg19'],
-    resources:
-        mem_mb = 40960,
-        threads = 10
-    params:
-        max_records_in_ram = 50000,
-    output:
-        lifted_vcf = config['liftover']['lifted_vcf'],
-        refected_vcf = config['liftover']['refected_vcf'],
-    shell:
-        "picard LiftoverVcf I={input.input_vcf} O={output.lifted_vcf} CHAIN={input.chain_file} REJECT={output.refected_vcf} R={input.reference_fasta} MAX_RECORDS_IN_RAM={params.max_records_in_ram} -Xmx40g"
         
         
 rule liftover_glow:
     input:
         chain_file = config['liftover']['chain_file'],
-        #input_vcf = config['liftover']['filtered_vcf_tbi'],
-        #input_vcf = config['liftover']['filtered_vcf'],
         input_vcf = config['vcf'],
         reference_fasta = config['liftover']['fasta_hg19'],
         reference_fasta_hg38 = config['fasta'],
@@ -92,32 +54,67 @@ rule liftover_glow:
         chroms = chroms,
     output:
         normalized_vcf_pq = config['liftover']['normalized_vcf_pq'],
-        lifted_vcf = config['liftover']['lifted_vcf'],
+        #lifted_vcf = config['liftover']['lifted_vcf'],
         lifted_vcf = config['liftover']['lifted_vcf_combined'],
         refected_vcf = config['liftover']['refected_vcf'],
     notebook:
         "notebooks/liftover_glow.ipynb"
+        
 
+rule mmsplice_combine_splice_maps:
+    input:
+        vcf = config['liftover']['lifted_vcf_combined_bgzip'],
+        fasta = config['liftover']['fasta_hg19'],
+        ref_tables3 = expand(str(config['mmsplice']['splice_maps_3']),
+            tissue=splice_map_tissues),
+        ref_tables5 = expand(str(config['mmsplice']['splice_maps_5']),
+            tissue=splice_map_tissues), 
+    resources:
+        mem_mb = 32000,
+        threads = 4
+    output:
+        combined_ref_tables5 = config['mmsplice']['combined_splice_maps_5'],
+        combined_ref_tables3 = config['mmsplice']['combined_splice_maps_3'],
+    script:
+        "scripts/mmsplice_combine_splice_maps.py"
+        
 
 rule mmsplice_splice_maps:
     input:
-        vcf = config['liftover']['lifted_vcf'],
-        fasta = config['fasta'],
-        ref_table3 = expand(str(config['mmsplice']['splice_maps_3']),\
+        vcf = config['liftover']['lifted_vcf_combined_bgzip'],
+        fasta = config['liftover']['fasta_hg19'],
+        ref_tables3 = expand(str(config['mmsplice']['splice_maps_3']),
             tissue=splice_map_tissues),
-        ref_table5 = expand(str(config['mmsplice']['splice_maps_5']),\
+        ref_tables5 = expand(str(config['mmsplice']['splice_maps_5']),
             tissue=splice_map_tissues),
+        combined_ref_tables5 = config['mmsplice']['combined_splice_maps_5'],
+        combined_ref_tables3 = config['mmsplice']['combined_splice_maps_3'],
     resources:
-        mem_mb = 32000,
+        mem_mb = 128000,
+        ntasks = 1,
         threads = 4
     output:
         result = config['mmsplice']['results_splice_map'],
     script:
         "scripts/mmsplice_splice_maps.py"
-    #notebook:
-    #    "notebooks/mmsplice_splice_maps.ipynb"
         
 
+rule mmsplice_splice_maps_postprocess:
+    input:
+        maf = config['mmsplice']['gnomad_maf_db'],
+        pred = config['mmsplice']['results_splice_map'],
+    params:
+        tissue = '{tissue}',
+    resources:
+        mem_mb = 64000,
+        ntasks = 1,
+        threads = 1
+    output:
+        gene = config['mmsplice']['results_splice_map_gene'],
+    script:
+        "scripts/mmsplice_splice_maps_postprocess.py"
+    
+    
 rule sample_annotation:
     input:
         participants = config['metadata']['participants'],
@@ -256,8 +253,8 @@ rule literature:
     output:
         nature_review = config['literature']['nature_review'],
         wgs = config['literature']['wgs']
-    #notebook:
-    #    "notebooks/literature.ipynb"
+    notebook:
+        "notebooks/literature.ipynb"
 
 
 rule parse_ALSoD:
@@ -277,8 +274,8 @@ rule compare_literature:
         nature_review = config['output'] + \
             '/literature_overlap_nature_review.txt',
         wgs = config['output'] + '/literature_overlap_wgs.txt'
-    #notebook:
-    #    "notebooks/compare_literature.ipynb"
+    notebook:
+        "notebooks/compare_literature.ipynb"
 
 
 rule prioritize_vep_variants:
@@ -291,8 +288,8 @@ rule prioritize_vep_variants:
         mmsplice = config['mmsplice']['results']
     output:
         prioritized = config['variants']['prioritized_chrom']
-    #notebook:
-    #    "notebooks/prioritized_variants.ipynb"
+    notebook:
+        "notebooks/prioritized_variants.ipynb"
 
 
 rule merge_variants:
@@ -322,8 +319,8 @@ rule variant_outlier:
     output:
         results_all = config['results_all'],
         results_variants = config['results_prioritized']
-    #notebook:
-    #    "notebooks/outlier_prioritized_variants.ipynb"
+    notebook:
+        "notebooks/outlier_prioritized_variants.ipynb"
 
 
 rule umap:
