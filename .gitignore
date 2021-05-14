@@ -1,3 +1,10 @@
+data/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/external/
+data/external/hg38/*
+!data/external/hg38/.gitkeep
+
 Rplots.pdf
 *.Rproj
 .snakemake/
@@ -78,9 +85,6 @@ target/
 
 # Jupyter NB Checkpoints
 .ipynb_checkpoints/
-
-# exclude data from source control by default
-/data/
 
 # Mac OS-specific storage files
 .DS_Store

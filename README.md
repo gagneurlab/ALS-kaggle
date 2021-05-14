@@ -14,7 +14,32 @@ Please install the following conda environment from the repository root.
 conda env create -f environment.yml
 ```
 
+This will create a conda environment called `als`.
+
 **Note:** You can alternatively use [mamba](https://mamba.readthedocs.io/en/latest/index.html) for faster install times.
+
+After a fresh install of the environment, you need to install the correct Ensembl release.
+This only needs to be done once.
+
+```commandline
+conda activate als
+pyensembl install --release 84 --species human
+```
+
+Prepare the input data
+----------------------
+
+Before executing the pipeline, you need to prepare the input data.
+If you prepare the data as described here, you won't need to change any paths in the `configs/config.yml`.
+
+1. Create a link in `data/` called `raw` that links to your location of `end-als` from the [End ALS Kaggle Challenge](https://www.kaggle.com/alsgroup/end-als).
+
+2. Create a directory or link to an empty directory elsewhere in `data/` called `processed`.
+We recommend that use a symlink, as the output can get quite large
+
+3. In `data/external/hg38/` download or copy a annotation GTF from Ensembl and FASTA reference file for the assembly hg38.
+Here, we call the GTF `Homo_sapiens.GRCh38.84.gtf` and the FASTA `GRCh38.primary_assembly.genome.fa`, which you could also modify in the `configs/config.yml`.
+
 
 Run the pipeline
 ----------------
@@ -63,10 +88,18 @@ Folder Structure
     ├── configs            <- Config files for Snakemake pipeline
     |
     ├── data
-    │   ├── external       <- Data from third party sources.
+    │   ├── external       <- Data from third party sources. You need to include reference
+    |   |                     files in external/hg38/ directory
+    |   |
     │   ├── interim        <- Intermediate data that has been transformed.
+    |   |
     │   ├── processed      <- The final, canonical data sets for modeling.
-    │   └── raw            <- The original, immutable data dump.
+    |   |                     This directory will be created autmatically once you run the pipeline.
+    |   |                     We recommend that you create a link to an existing directory, as the 
+    |   |                     output can be pretty large. 
+    |   |
+    │   └── raw            <- The original, immutable data dump. You need to create a link
+    |                         to the end-als data here
     │
     ├── docs               <- A default Sphinx project; see sphinx-doc.org for details
     │
