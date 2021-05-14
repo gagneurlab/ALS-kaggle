@@ -9,6 +9,8 @@ dependencies:
   - r-essentials
   - r-data.table
   - r-ggplot2
+  - r-viridis
+  - r-patchwork
   - bioconductor-outrider >=1.6.1
   - r-rmariadb
   - bioconductor-genomicfeatures
