@@ -11,7 +11,7 @@ liftover:
   filtered_vcf_tbi: /s/project/kaggle-als/liftover_vcf/filtered_vcf_reheadered.vcf.gz.tbi
   normalized_vcf_pq: /s/project/kaggle-als/liftover_vcf/normalized_vcf_hg38.parquet
   lifted_vcf: /s/project/kaggle-als/liftover_vcf/lifted_vcf_hg19_from_AnswerALS_subset_annovar.hg38_anno_and_geno.no_intergenic.vcf.gz
-  lifted_vcf: /s/project/kaggle-als/liftover_vcf/lifted_vcf_hg19_from_AnswerALS_subset_annovar.hg38_anno_and_geno.no_intergenic.combined.vcf
+  lifted_vcf_combined: /s/project/kaggle-als/liftover_vcf/lifted_vcf_hg19_from_AnswerALS_subset_annovar.hg38_anno_and_geno.no_intergenic.combined.vcf
   refected_vcf: /s/project/kaggle-als/liftover_vcf/rejected_variants_from_liftover.vcf
   #fasta_hg19: /s/genomes/human/hg19/fasta/Homo_sapiens.GRCh37.75.dna_sm.primary_assembly.fa
   #reference_dict: /s/genomes/human/hg19/fasta/Homo_sapiens.GRCh37.75.dna_sm.primary_assembly_reference.dict

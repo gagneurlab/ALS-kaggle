@@ -39,7 +39,7 @@ try:
     snakemake
 except NameError:
     from snakemk_util import load_rule_args
-    
+
     snakemake = load_rule_args(
         snakefile = snakefile_path,
         rule_name = 'liftover_glow',
@@ -230,7 +230,7 @@ repartitioned_df = (
 repartitioned_df.printSchema()
 
 # %%
-repartitioned_df.write.format("bigvcf").save(snakemake.output['lifted_vcf'] + ".combined.vcf.gz")
-# repartitioned_df.write.format("vcf").mode("overwrite").save(snakemake.output['lifted_vcf'])
+repartitioned_df.write.format("bigvcf").save(snakemake.output['lifted_vcf_combined'])
+# repartitioned_df.write.format("vcf").mode("overwrite").save(snakemake.output['lifted_vcf_combined'])
 
 # %%
