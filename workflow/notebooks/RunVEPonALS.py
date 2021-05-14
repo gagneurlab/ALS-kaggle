@@ -46,7 +46,8 @@ except NameError:
         snakefile = snakefile_path,
         rule_name = 'annotate_variants_with_vep',
         default_wildcards={
-        }
+        },
+        root="../",
     )
 
 print(json.dumps(snakemake.__dict__, indent=2))

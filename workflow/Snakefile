@@ -1,5 +1,3 @@
-workdir: '..'
-
 import itertools
 
 configfile: "configs/config.yaml"
