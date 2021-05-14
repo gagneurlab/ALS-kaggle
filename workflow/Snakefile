@@ -251,7 +251,8 @@ rule prioritize_vep_variants:
 rule merge_variants:
     input:
         prioritized = expand(
-            config['variants']['prioritized_chrom'], chrom=chroms)
+            config['variants']['prioritized_chrom'], chrom=chroms
+        )
     output:
         prioritized = config['variants']['prioritized']
     run:

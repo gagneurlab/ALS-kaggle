@@ -49,16 +49,16 @@ literature:
   alsod: data/processed/literature/alsod.csv
 
 vep:
-  human_genome_version: "hg38"
-  assembly: "GRCh38"
-  vep_cache: "/opt/modules/i12g/conda-ensembl-vep/99/cachedir"
-  loftee_data_dir: "/s/raw/loftee/{ASSEMBLY}"
-  cadd_dir: "/s/raw/cadd/v1.6/{ASSEMBLY}"
-  gnomad_vcf: "/s/raw/gnomad/2.1.1/{HUMAN_GENOME_VERSION}/gnomad.genomes.r2.1.1.sites.vcf.gz"
+  human_genome_version: hg38
+  assembly: GRCh38
+  vep_cache: data/intermediate/ensembl_cache
+  loftee_data_dir: data/external/vep/loftee/{ASSEMBLY}
+  cadd_dir: data/external/vep/cadd/v1.6/{ASSEMBLY}
+  gnomad_vcf: data/external/gnomad/2.1.1/{HUMAN_GENOME_VERSION}/gnomad.genomes.r2.1.1.sites.vcf.gz
 
 variants:
-  vep: /s/project/kaggle-als/vep_annotations/ensembl_bychr.parquet/chrom={chrom}/
-  vep_pq: /s/project/kaggle-als/vep_annotations/ensembl_bychr.parquet/
+  vep: data/processed/vep_annotations/ensembl_bychr.parquet/chrom={chrom}/
+  vep_pq: data/processed/vep_annotations/ensembl_bychr.parquet/
   prioritized_chrom:  data/processed/variants/prioritized_variants_chrom={chrom}.csv
   prioritized: data/processed/variants/prioritized_variants.csv
 
