@@ -39,6 +39,8 @@ snakemake dependency -j 1
 
 where `-j 1` allows the pipeline to use at most 1 core.
 
+![rulegraph](reports/figures/dependency/rulegraph.png "Rule graph of the Snakemake workflow")
+
 
 To run the complete pipeline with e.g. 10 cores, call
 
@@ -80,7 +82,9 @@ Folder Structure
     |   ├── scripts        <- Scripts to be run during pipeline execution
     |   └── Snakefile      <- Snakefile with all the Snakemake rules
     |
-    ├── environment.yml   <- The requirements file for reproducing the analysis environment, e.g.
+    ├── environment.yml   <- Conda environment for reproducing the pipeline
+    |
+    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
     │                         generated with `pip freeze > requirements.txt`
     │
     └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
