@@ -93,6 +93,7 @@ rule liftover_glow:
     output:
         normalized_vcf_pq = config['liftover']['normalized_vcf_pq'],
         lifted_vcf = config['liftover']['lifted_vcf'],
+        lifted_vcf = config['liftover']['lifted_vcf_combined'],
         refected_vcf = config['liftover']['refected_vcf'],
     notebook:
         "notebooks/liftover_glow.ipynb"

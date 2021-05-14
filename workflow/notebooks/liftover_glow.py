@@ -70,7 +70,7 @@ MEM = os.popen("ulimit -m").read()
 if MEM.startswith("unlimited"):
     print("Memory not constrained, using all available memory...")
     import psutil
-    MEM = psutil.virtual_memory().available / 1024
+    MEM = psutil.virtual_memory().available / 1024 * 0.8
 MEM = int(MEM)
 N_CPU = int(os.popen("nproc").read())
 print("memory: %dk" % MEM)
@@ -100,7 +100,7 @@ spark = (
 #     .config("spark.sql.execution.useObjectHashAggregateExec", "false")
 #     .config("spark.network.timeout", "1800s")
     .config("spark.driver.maxResultSize", "48G")
-    .config("spark.default.parallelism", N_CPU / 2)
+    .config("spark.default.parallelism", int(N_CPU / 2))
     .config("spark.files.maxPartitionBytes", 33554432)
 #     .config("spark.databricks.io.cache.enabled", "true") # only enable when local storage is actually on local SSD
     .config("spark.task.maxFailures", MAX_FAILURES)
@@ -174,7 +174,63 @@ lifted_df = glow.transform('lift_over_variants', df, chain_file=snakemake.input[
 lifted_df.printSchema()
 
 # %%
-# lifted_df.write.format("bigvcf").save(snakemake.output['lifted_vcf'])
-lifted_df.write.format("vcf").mode("overwrite").save(snakemake.output['lifted_vcf'])
+lifted_df.write.format("bigvcf").save(snakemake.output['lifted_vcf'])
+# repartitioned_df.write.format("vcf").mode("overwrite").save(snakemake.output['lifted_vcf'])
+
+# %%
+import glob
+
+vcf_parts = glob.glob(snakemake.output['lifted_vcf'] + "/*.vcf.gz") + glob.glob(snakemake.output['lifted_vcf'] + "/*.vcf")
+
+
+# %%
+lifted_df = (
+    spark
+    .read
+    .option("flattenInfoFields", False)
+    .format('vcf')
+    .load(vcf_parts)
+)
+
+# %% [raw]
+# LIFTED_VCF_PQ_PATH = snakemake.output['lifted_vcf'] + ".parquet"
+# LIFTED_VCF_PQ_PATH
+
+# %% [raw]
+# (
+#     lifted_df
+#     .write
+#     .parquet(LIFTED_VCF_PQ_PATH, mode="overwrite", partitionBy=["contigName", ])
+# )
+
+# %% [raw]
+# # sort by chromosome and by location
+# lifted_df = (
+#    lifted_df
+#    .repartitionByRange(2048, f.col("contigName"), f.col("start"))
+#    .sortWithinPartitions(["contigName", "start"])
+#    .persist()
+# )
+
+# %%
+repartitioned_df = (
+    lifted_df
+    .orderBy("contigName", "start")
+    # .repartitionByRange(2048, f.col("contigName"), f.col("start"))
+)
+
+# %%
+repartitioned_df = (
+    repartitioned_df
+    .withColumn("call_summary_stats", glow.call_summary_stats(f.col("genotypes")))
+    .withColumn("INFO_AC", f.col("call_summary_stats.alleleCounts"))
+    .withColumn("INFO_AF", f.col("call_summary_stats.alleleFrequencies"))
+    .drop("call_summary_stats")
+)
+repartitioned_df.printSchema()
+
+# %%
+repartitioned_df.write.format("bigvcf").save(snakemake.output['lifted_vcf'] + ".combined.vcf.gz")
+# repartitioned_df.write.format("vcf").mode("overwrite").save(snakemake.output['lifted_vcf'])
 
 # %%
