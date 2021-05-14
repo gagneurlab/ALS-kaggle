@@ -2,6 +2,7 @@ import itertools
 
 configfile: "configs/config.yaml"
 
+SNAKEFILE_DIR = os.path.dirname(workflow.snakefile)
 
 chroms = [
     'chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7',
@@ -207,6 +208,32 @@ rule compare_literature:
     notebook:
         "notebooks/compare_literature.ipynb"
 
+rule annotate_variants_with_vep:
+    input:
+        vcf = config['vcf'],
+        gtf = config['gtf'],
+        fasta = config['fasta'],
+    params:
+        human_genome_version = config['vep']['human_genome_version'],
+        assembly = config['vep']['assembly'],
+        vep_cache = config['vep']['vep_cache'],
+        loftee_data_dir = config['vep']['loftee_data_dir'].format(
+            ASSEMBLY=config['vep']['assembly'],
+            HUMAN_GENOME_VERSION=config['vep']['human_genome_version'],
+        ),
+        cadd_dir = config['vep']['cadd_dir'].format(
+            ASSEMBLY=config['vep']['assembly'],
+            HUMAN_GENOME_VERSION=config['vep']['human_genome_version'],
+        ),
+        gnomad_vcf = config['vep']['gnomad_vcf'].format(
+            ASSEMBLY=config['vep']['assembly'],
+            HUMAN_GENOME_VERSION=config['vep']['human_genome_version'],
+        ),
+        vep_annotate_cmd = f"{SNAKEFILE_DIR}/scripts/vep_99_skipheader.sh",
+    output:
+        vep = directory(config['variants']['vep_pq']),
+    notebook:
+        "notebooks/RunVEPonALS.ipynb"
 
 rule prioritize_vep_variants:
     input:
