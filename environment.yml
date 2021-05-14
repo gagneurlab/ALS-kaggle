@@ -31,4 +31,4 @@ dependencies:
   - networkx
   - pyensembl
   - pip:
-    - snakemk-util
+    - snakemk-util >=0.2.2
