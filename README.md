@@ -14,9 +14,9 @@ We focus on Task 1 of the End ALS kaggle challenge, asking whether there are one
 
 End ALS Kaggle Challenge page: https://www.kaggle.com/alsgroup/end-als
 
-Repository: https://github.com/gagneurlab/ALS
+Repository: https://github.com/gagneurlab/ALS-kaggle
 
-Results: https://github.com/gagneurlab/ALS/tree/master/reports/ALS_slides.pdf
+Results: https://github.com/gagneurlab/ALS-kaggle/tree/master/reports/ALS_slides.pdf
 
 ## Approach
 
@@ -34,7 +34,7 @@ Altogether, these results demonstrate the applicability of expression outlier an
 
 ## Results
 
-Our results can be found as a presentation in [`reports/ALS_slides.pdf`](https://github.com/gagneurlab/ALS/tree/master/reports/ALS_slides).
+Our results can be found as a presentation in [`reports/ALS_slides.pdf`](https://github.com/gagneurlab/ALS-kaggle/tree/master/reports/ALS_slides).
 
 ## Reproducibility
 
