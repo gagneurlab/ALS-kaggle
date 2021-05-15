@@ -10,7 +10,7 @@ Amyotrophic Lateral Sclerosis (ALS) is a neurodegenerative disease for which evi
 
 We focus on Task 1 of the End ALS kaggle challenge, asking whether there are one or more pathways that could contribute to ALS.
 
-  
+---
 
 End ALS Kaggle Challenge page: https://www.kaggle.com/alsgroup/end-als
 
