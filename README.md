@@ -75,7 +75,7 @@ If you prepare the data as described here, you won't need to change any paths in
 1. Create a link in `data/` called `raw` that links to your location of `end-als` from the [End ALS Kaggle Challenge](https://www.kaggle.com/alsgroup/end-als).
 
 2. Create a directory or link to an empty directory elsewhere in `data/` called `processed`.
-   We recommend that use a symlink, as the output can get quite large
+   We recommend to use a symlink, as the output can get quite large.
 
 3. In `data/external/hg38/` download or copy a annotation GTF from Ensembl and FASTA reference file for the assembly hg38.
    Here, we call the GTF `Homo_sapiens.GRCh38.84.gtf` and the FASTA `GRCh38.primary_assembly.genome.fa`, which you could also modify in the `configs/config.yml`.
