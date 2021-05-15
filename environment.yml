@@ -30,5 +30,6 @@ dependencies:
   - scipy
   - networkx
   - pyensembl
+  - plotnine
   - pip:
     - snakemk-util >=0.2.2

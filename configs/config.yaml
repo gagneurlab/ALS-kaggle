@@ -39,12 +39,14 @@ outrider:
   results: data/processed/outrider/results.tsv
 
 ppi:
+  string_url: https://stringdb-static.org/download/protein.links.detailed.v11.0/9606.protein.links.detailed.v11.0.txt.gz
   gene_seed_prob: data/processed/network_analysis/prob_of_reaching_gene_from_seeds.tsv
 
 genes_gtf: data/processed/outrider/outlier_gene_gtf.csv
 
 literature:
   nature_review: data/processed/literature/nature_review_als_genes.csv
+  nature_review_with_ensg: data/external/nature_review_als_genes_ensg.csv
   wgs: data/processed/literature/wgs_als_genes.csv
   alsod: data/processed/literature/alsod.csv
 

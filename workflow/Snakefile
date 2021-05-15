@@ -282,10 +282,41 @@ rule variant_outlier:
 
 ### PPI Network Analysis
 
-rule network_analysis:
+rule ppi_download_string:
+    output: config['output'] + '/network_analysis/9606.protein.links.detailed.v11.0.txt.gz'
+    params:
+        url=config['ppi']['string_url']
+    shell:
+        """
+        wget --timestamping {params.url} -O {output}.gz
+        """
+
+
+rule ppi_preprocess_string:
+    input:
+        db=rules.ppi_download_string.output[0]
+    output:
+        db=config['output'] + '/network_analysis/string_preprocessed.tsv.gz'
+    params:
+        release=config['genome']['ensembl_release']
+    notebook:
+        "notebooks/PreprocessString.ipynb"
+
+
+rule ppi_random_walk:
+    input:
+        lit_rev_genes=config['literature']['nature_review_with_ensg'],
+        string_db=rules.ppi_preprocess_string.output.db
+    output:
+        gene_seed_prob=config['ppi']['gene_seed_prob']
+    notebook:
+        "notebooks/RunRandomWalkWithRestarts.ipynb"
+
+
+rule ppi_subset:
     input:
         outliers = rules.outrider.output.results,
-        gene_seed_prob = config['ppi']['gene_seed_prob']
+        gene_seed_prob = rules.ppi_random_walk.output.gene_seed_prob
     output:
         histogram = config['output'] + '/network_analysis/histogram.png',
         outliers = config['output'] + '/network_analysis/expr_outliers.tsv',
@@ -318,7 +349,8 @@ def get_output(wildcards):
         rules.compare_literature.output,
         config['outrider']['results'],
         config['results_prioritized'],
-        rules.network_analysis.output
+        rules.ppi_random_walk.output,
+        rules.ppi_subset.output
     ]
     
     if config['plots'] is True:
