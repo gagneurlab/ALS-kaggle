@@ -4,8 +4,8 @@ figures: reports/figures
 plots: true  # whether to inlude plotting rules in dependency graph
 
 vcf: data/raw/genomics-data/AnswerALS_subset_annovar.hg38_anno_and_geno.no_intergenic.vcf.gz
-gtf: external/hg38/Homo_sapiens.GRCh38.84.gtf
-fasta: external/hg38/GRCh38.primary_assembly.genome.fa
+gtf: data/external/hg38/Homo_sapiens.GRCh38.84.gtf
+fasta: data/external/hg38/GRCh38.primary_assembly.genome.fa
 
 genome:
   ensembl_release: 84
