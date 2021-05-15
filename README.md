@@ -26,6 +26,10 @@ conda activate als
 pyensembl install --release 84 --species human
 ```
 
+For VEP, the setup is a bit more complicated.
+In case you don't already have a VEP setup, please refer to `references/setup_VEP.md`.
+
+
 Prepare the input data
 ----------------------
 
@@ -39,6 +43,8 @@ We recommend that use a symlink, as the output can get quite large
 
 3. In `data/external/hg38/` download or copy a annotation GTF from Ensembl and FASTA reference file for the assembly hg38.
 Here, we call the GTF `Homo_sapiens.GRCh38.84.gtf` and the FASTA `GRCh38.primary_assembly.genome.fa`, which you could also modify in the `configs/config.yml`.
+
+4. Please make sure that all necessary inputs are either linked to `data/external/vep` according to `configs/config.yml` or specify different locations of the `CADD`, `LOFTEE` and `gnomAD` directories.
 
 
 Run the pipeline
