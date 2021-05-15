@@ -1,15 +1,24 @@
-End ALS Kaggle Challenge
-==============================
+# When the outlier is the signal
 
-Repository: [GitHub - gagneurlab/ALS](https://github.com/gagneurlab/ALS)
+*Felix Brechtmann [1] , M. Hasan Çelik [2] , Julien Gagneur [1] , Florian Hölzlwimmer [1] , Michaela Müller [1] , Nils Wagner [1] , Xiaohui Xie [2] , Vicente Yépez [1] , Michael Zech [1]*
 
-## When the outlier is the signal
+*[1] Technical University of Munich*
+
+*[2] University of California, Irvine*
 
 Amyotrophic Lateral Sclerosis (ALS) is a neurodegenerative disease for which evidence of molecular causes are not yet well understood. Genome-wide association studies and other case-control approaches have tried to identify genes that could possibly be involved in the development and progression of the disease. However, for most cases, the genetic causes remain a mystery.
 
 We focus on Task 1 of the End ALS kaggle challenge, asking whether there are one or more pathways that could contribute to ALS.
 
-### Approach
+  
+
+End ALS Kaggle Challenge page: https://www.kaggle.com/alsgroup/end-als
+
+Repository: https://github.com/gagneurlab/ALS
+
+Results: https://github.com/gagneurlab/ALS/tree/master/reports/ALS_slides.pdf
+
+## Approach
 
 We asked whether combining DNA and RNA data could be employed to discover novel genes and biological pathways implicated in ALS. Given the heterogeneity of genetic causes of ALS reported in the literature, we assumed that no single gene or pathway would collectively explain disease cases. Therefore, instead of comparing cases against controls, we searched for potential aberrations that could be specific for a single or a few individuals.
 
@@ -23,7 +32,7 @@ Altogether, these results demonstrate the applicability of expression outlier an
 
 *[1] Brechtmann, Felix, Christian Mertes, Agnė Matusevičiūtė, Vicente A. Yépez, Žiga Avsec, Maximilian Herzog, Daniel M. Bader, Holger Prokisch, and Julien Gagneur. 2018. “OUTRIDER: A Statistical Method for Detecting Aberrantly Expressed Genes in RNA Sequencing Data.” American Journal of Human Genetics 103 (6): 907–17.*
 
-### Results
+## Results
 
 Our results can be found as a presentation in [`reports/ALS_slides.pdf`](https://github.com/gagneurlab/ALS/tree/master/reports/ALS_slides).
 
