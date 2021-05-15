@@ -6,7 +6,7 @@
 
 *[2] University of California, Irvine*
 
-Amyotrophic Lateral Sclerosis (ALS) is a neurodegenerative disease for which evidence of molecular causes are not yet well understood. Genome-wide association studies and other case-control approaches have tried to identify genes that could possibly be involved in the development and progression of the disease. However, for most cases, the genetic causes remain a mystery.
+Amyotrophic Lateral Sclerosis (ALS) is a neurodegenerative disease for which evidence of molecular causes are not yet well understood. Genome-wide association studies and other case-control approaches have tried to identify genes that could possibly be involved in the development and progression of the disease. However, for most cases the genetic causes remain a mystery.
 
 We focus on Task 1 of the End ALS kaggle challenge, asking whether there are one or more pathways that could contribute to ALS.
 
@@ -35,6 +35,18 @@ Altogether, these results demonstrate the applicability of expression outlier an
 ## Results
 
 Our results can be found as a presentation in [`reports/ALS_slides.pdf`](https://github.com/gagneurlab/ALS-kaggle/tree/master/reports/ALS_slides).
+
+Our main results include the following:
+
++ We found variants associated with aberrant expression for known ALS genes, potentially characterising those affected patients (n = 4).
+
++ We found new high impact variants in further cases in a gene potentially related to ALS, which would improve our catalogue of pathogenic variants.
+
++ We found new candidate genes in known pathways.
+
++ We found potential new pathways.
+
++ Altogether, this gives a potential genetic explanation to 63 (46%) of the patients and further supports a multi-causal and multi-mechanism view of ALS.
 
 ## Reproducibility
 
