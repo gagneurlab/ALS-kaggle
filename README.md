@@ -34,7 +34,7 @@ Altogether, these results demonstrate the applicability of expression outlier an
 
 ## Results
 
-Our results can be found as a presentation in [`reports/ALS_slides.pdf`](https://github.com/gagneurlab/ALS-kaggle/tree/master/reports/ALS_slides).
+Our results can be found as a presentation in [`reports/ALS_slides.pdf`](https://github.com/gagneurlab/ALS-kaggle/tree/master/reports/ALS_slides.pdf).
 
 Our main results include the following:
 
